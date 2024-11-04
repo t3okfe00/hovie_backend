@@ -1,10 +1,7 @@
 import { Router, Request, Response } from "express";
-import { getAllUsers } from "../model/model";
+import { getUsers } from "../controller/userController";
 const router = Router();
 
-router.use("/users", async (req: Request, res: Response) => {
-  const users = await getAllUsers();
-  res.json(users);
-});
+router.use("/users", getUsers);
 
 export default router;
