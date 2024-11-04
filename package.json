@@ -1,11 +1,12 @@
 {
+  "type": "module",
   "name": "backend",
   "version": "1.0.0",
   "description": "",
   "main": "src/server.ts",
   "scripts": {
-    "dev": "nodemon --exec ts-node src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "cross-env NODE_ENV=development nodemon --exec tsx src/server.ts",
+    "test": "cross-env NODE_ENV=test nodemon --exec tsx src/server.ts"
   },
   "repository": {
     "type": "git",
@@ -18,12 +19,18 @@
   },
   "homepage": "https://github.com/AWAP-Group3/Backend#readme",
   "dependencies": {
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
-    "express": "^4.21.1"
+    "drizzle-orm": "^0.36.0",
+    "express": "^4.21.1",
+    "postgres": "^3.4.5"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.8.7",
-    "nodemon": "^3.1.7"
+    "drizzle-kit": "^0.27.1",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2"
   }
 }
