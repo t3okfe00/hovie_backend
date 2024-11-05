@@ -1,11 +1,15 @@
 import { getAllUsers } from "../model/model";
-import { Request, Response } from "express-serve-static-core";
+import { NextFunction, Request, Response } from "express-serve-static-core";
+import ApiError from "../helpers/ApiError";
 
-export const getUsers = async (req: Request, res: Response) => {
+const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await getAllUsers();
     res.json(users);
   } catch (error) {
-    res.json({ message: "Error" });
+    console.log("Error***", error);
+    next(new ApiError("Failed to fetch users from the database", 500));
   }
 };
+
+export { getUsers };
