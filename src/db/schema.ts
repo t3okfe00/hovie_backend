@@ -111,6 +111,7 @@ export const groupcontent = pgTable("groupcontent", {
 	timestamp: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
 	addedByUserId: integer("added_by_user_id"),
 	groupsId: integer("groups_id").notNull(),
+	movieId: integer("movie_id").notNull(),
 }, (table) => {
 	return {
 		groupcontentGroupsIdFkey: foreignKey({
