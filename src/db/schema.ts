@@ -1,10 +1,10 @@
 import {
-  pgTable,
-  serial,
-  integer,
-  varchar,
-  timestamp,
-  unique,
+    pgTable,
+    serial,
+    integer,
+    varchar,
+    timestamp,
+    unique, foreignKey,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 

@@ -8,10 +8,9 @@ router.get("/groups/:id", getGroup);
 router.get("/groups/:id/content", getContentFromGroup);
 router.post("/groups/:id/join", joinGroup);
 router.post("/groups/:id/members", addMemberToGroup);
-router.post("/groups", createGroup);
-router.delete("/groups/:id", deleteGroup);
-router.delete("/groups/:id/members/:userId", removeMemberFromGroup);
+router.post("/groups", createGroup);//add member to member table
+router.delete("/groups/:id", deleteGroup);//remove member from member table
+router.delete("/groups/:id/members/:userId", removeMemberFromGroup);//no member in member table
 router.post("/groups/:id/content", addContentToGroup);
-router.post("/groups", createGroup);
 
 export default router;
