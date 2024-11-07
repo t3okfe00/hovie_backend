@@ -1,4 +1,5 @@
 import express, { NextFunction } from "express";
+import helmet from "helmet";
 import { Request, Response } from "express";
 
 import swaggerJSDoc from "swagger-jsdoc";
@@ -30,15 +31,23 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(morgan("dev"));
+app.use(express.json());
+app.use(helmet());
 
 app.use(express.static(pathToSwaggerUi));
-app.use("/", userRouter);
-app.get("/", (req: Request, res: Response) => {
-  res.send("asdsad!");
+app.use("/user", userRouter);
+
+// to handle requests to the endpoints that does not exist
+//important to place this after all routes since if this runs
+//it means there is no route matched and we return 404
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const err = new ApiError("Route Not Found", 404);
+  next(err); // Pass the error to the error-handling middleware
 });
 
 app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
-  const statusCode = err.statusCode;
+  console.log("Global");
+  const statusCode = err.statusCode || 500;
   res.status(statusCode).json({ error: err.message });
 });
 
