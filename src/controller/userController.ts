@@ -1,4 +1,4 @@
-import { getAllUsers, createUser } from "../models/user";
+import { getAllUsers, createUser } from "../models/userModel";
 import { NextFunction, Request, Response } from "express-serve-static-core";
 import ApiError from "../helpers/ApiError";
 import { User } from "../types";

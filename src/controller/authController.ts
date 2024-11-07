@@ -1,5 +1,5 @@
 import { User } from "../types";
-import { createUser, updateUserProfileUrl } from "./../models/user";
+import { createUser, updateUserProfileUrl } from "../models/userModel";
 import { body, validationResult } from "express-validator";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import ApiError from "../helpers/ApiError";

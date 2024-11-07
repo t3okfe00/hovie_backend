@@ -6,7 +6,7 @@ import {
     getGroupById,
     joinGroupById,
     acceptJoinRequest, removeMember, addContent, getContentFromModel
-} from "../model/groupModel";
+} from "../models/groupModel";
 
 export const getGroups = async (req: Request, res: Response) => {
     try {
