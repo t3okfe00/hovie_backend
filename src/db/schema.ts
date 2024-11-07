@@ -93,12 +93,19 @@ export const joinrequests = pgTable("joinrequests", {
 
 // `groupcontent` table with cascading behavior for both delete and update
 export const groupcontent = pgTable("groupcontent", {
-  id: serial().primaryKey().notNull(),
-  timestamp: timestamp({ mode: "string" }).default(sql`CURRENT_TIMESTAMP`),
-  addedByUserId: integer("added_by_user_id"),
-  groupsId: integer("groups_id")
-    .notNull()
-    .references(() => groups.id, { onDelete: "cascade", onUpdate: "cascade" }),
+	id: serial().primaryKey().notNull(),
+	timestamp: timestamp({ mode: 'string' }).default(sql`CURRENT_TIMESTAMP`),
+	addedByUserId: integer("added_by_user_id"),
+	groupsId: integer("groups_id").notNull(),
+	movieId: integer("movie_id").notNull(),
+}, (table) => {
+	return {
+		groupcontentGroupsIdFkey: foreignKey({
+			columns: [table.groupsId],
+			foreignColumns: [groups.id],
+			name: "groupcontent_groups_id_fkey"
+		}),
+	}
 });
 
 // import { pgTable, foreignKey, serial, integer, varchar, timestamp, unique } from "drizzle-orm/pg-core"
