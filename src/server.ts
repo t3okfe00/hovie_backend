@@ -1,4 +1,5 @@
 import express, { NextFunction } from "express";
+import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import { Request, Response } from "express";
 
@@ -34,6 +35,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(helmet());
+app.use(cookieParser());
 
 app.use(express.static(pathToSwaggerUi));
 app.use("/user", userRouter);
@@ -48,7 +50,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use((err: ApiError, req: Request, res: Response, next: NextFunction) => {
-  console.log("Global");
   const statusCode = err.statusCode || 500;
   res.status(statusCode).json({ error: err.message });
 });

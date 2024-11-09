@@ -1,8 +1,6 @@
-import { getAllUsers, createUser } from "../models/userModel";
+import { getAllUsers, createUser, deleteUserById } from "../models/userModel";
 import { NextFunction, Request, Response } from "express-serve-static-core";
 import ApiError from "../helpers/ApiError";
-import { User } from "../types";
-import { create } from "domain";
 
 const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -11,6 +9,36 @@ const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     next(new ApiError("Failed to fetch users from the database", 500));
   }
+};
+
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = req.user.userId;
+  try {
+    await deleteUserById(userId);
+    res.status(204).json({ message: "User deleted succesfully" });
+  } catch (error) {
+    next(new ApiError("User could not be deleted", 500));
+  }
+};
+
+export const logOutUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log("Logging out the user");
+
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 1,
+  });
+  res.json({ message: "Logged Out" });
 };
 
 export { getUsers };

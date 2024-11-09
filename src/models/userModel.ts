@@ -10,6 +10,8 @@ import {
 import { sql, eq } from "drizzle-orm";
 import { db } from "../db";
 import { User, CreateUserInput } from "../types";
+import { hashPassword } from "../utils/hashPassword";
+import { usersTable } from "../dbtest/schematest";
 
 export const users = pgTable(
   "users",
@@ -36,9 +38,9 @@ export const getAllUsers = async () => {
 };
 
 export const createUser = async (userData: CreateUserInput): Promise<User> => {
-  console.log("User Data in Create User function :", userData);
+  const hashedPassword = await hashPassword(userData.password);
 
-  await db.insert(users).values(userData);
+  await db.insert(users).values({ ...userData, password: hashedPassword });
 
   const [newUser] = await db
     .select()
@@ -70,4 +72,12 @@ export const updateUserProfileUrl = async (
     console.error("Error updating profileUrl:", error);
     throw error; // Rethrow error to handle it higher up in the call stack
   }
+};
+
+export const getUserByEmail = async (email: string): Promise<User[]> => {
+  return await db.select().from(users).where(eq(users.email, email));
+};
+
+export const deleteUserById = async (id: number) => {
+  return await db.delete(users).where(eq(users.id, id));
 };

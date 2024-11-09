@@ -1,10 +1,15 @@
-import { User } from "../types";
-import { createUser, updateUserProfileUrl } from "../models/userModel";
+import {
+  createUser,
+  getUserByEmail,
+  updateUserProfileUrl,
+} from "../models/userModel";
 import { body, validationResult } from "express-validator";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import ApiError from "../helpers/ApiError";
 import { v4 as uuidv4 } from "uuid";
-
+import bcrypt from "bcrypt";
+import { User } from "../types";
+import jwt from "jsonwebtoken";
 export const validateSignUp: RequestHandler[] = [
   body("email").isEmail().withMessage("Invalid email format"),
   body("password")
@@ -30,6 +35,7 @@ export const validateSignUp: RequestHandler[] = [
     next();
   },
 ];
+
 export const signUp = async (
   req: Request,
   res: Response,
@@ -63,9 +69,59 @@ export const signUp = async (
       name: newUser.name,
       profileUrl: updatedURL,
     };
+
     res.status(201).location(`/user/${newUser.id}`).json(userData);
+    return;
   } catch (error) {
-    console.log("ERROR!", error);
     next(new ApiError("Error creating user", 500));
   }
+};
+
+export const loginUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    next(new ApiError("Missing credentials", 400));
+    return;
+  }
+
+  const user: User[] = await getUserByEmail(email);
+
+  if (user.length == 0) {
+    res.status(401).json({ message: "Invalid Credentials" });
+    return;
+  }
+  const isPasswordValid = await bcrypt.compare(password, user[0].password);
+  if (!isPasswordValid) {
+    return next(new ApiError("Invalid Credentials", 401));
+  }
+
+  const token = jwt.sign(
+    { userId: user[0].id, email: user[0].email }, // Payload (you can include more info here)
+    process.env.JWT_SECRET as jwt.Secret, // Secret key
+    { expiresIn: "1h" } // Token expiration time (e.g., 24 hour)
+  );
+
+  // Cookie
+  res.cookie("jwt", token, {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 3600000,
+  });
+
+  res.json({
+    message: "Login successful",
+
+    user: {
+      id: user[0].id,
+      email: user[0].email,
+      name: user[0].name,
+      profileUrl: user[0].profileUrl,
+    },
+  });
 };
