@@ -13,15 +13,19 @@ export const authenticateJWT = (
     return next(new ApiError("Unauthorized", 401));
   }
 
-  jwt.verify(token, process.env.JWT_SECRET as jwt.Secret, (err, user) => {
-    console.log("JWT Verifying!");
-    if (err) {
-      console.log("Error happened", err);
-      return next(new ApiError("Unauthorized token", 403));
+  jwt.verify(
+    token,
+    process.env.JWT_SECRET as jwt.Secret,
+    (err: any, user: any) => {
+      console.log("JWT Verifying!");
+      if (err) {
+        console.log("Error happened", err);
+        return next(new ApiError("Unauthorized token", 403));
+      }
+      console.log("Request is from valid user!");
+      console.log("User", user);
+      req.user = user;
+      next();
     }
-    console.log("Request is from valid user!");
-    console.log("User", user);
-    req.user = user;
-    next();
-  });
+  );
 };

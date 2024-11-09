@@ -4,14 +4,21 @@ import {
     serial,
     integer,
     varchar,
-    timestamp,
-    unique,
+
 } from "drizzle-orm/pg-core";
-import {eq, and, sql} from "drizzle-orm";
+import {eq, and} from "drizzle-orm";
 import { db } from "../db";
 import {users} from "./userModel";
-import { Request } from "express-serve-static-core";
 import {groupcontent, groupmembers} from "../db/schema";
+import {
+    CreateGroupContentInput,
+    CreateGroupInput,
+    Group,
+    IdGroupInput,
+    JoinGroupInput,
+    RemoveMemberInput,
+    UidIdGroupInput
+} from "../types";
 
 export const groups = pgTable("groups", {
     id: serial().primaryKey().notNull(),
@@ -51,87 +58,90 @@ export const getAllGroups = async () => {
     return await db.select().from(groups);
 };
 
-export const postGroup = async ({ name, ownersId }: { name: string; ownersId: number }) => {
-    return await db.insert(groups).values({ name, ownersId }).returning();
+export const postGroup = async (groupData: CreateGroupInput): Promise<Group> => {
+    await db.insert(groups).values(groupData).returning();
+    const [newGroup] = await db.select().from(groups).where(eq(groups.name, groupData.name));
+    return newGroup;
 };
 
-export const deleteGroupById = async (id: number) => {
-    const result = await db.delete(groups).where(eq(groups.id, id)).returning();
-    return result.length > 0;
+export const deleteGroupById = async (groupData: IdGroupInput): Promise<Group> => {
+    const [deletedGroup] = await db.delete(groups).where(eq(groups.id, groupData.id)).returning();
+    return deletedGroup;
 };
 
-export const getGroupById = async (id: number) => {
-    const [group] = await db.select().from(groups).where(eq(groups.id, id));
+export const getGroupById = async (groupData: IdGroupInput): Promise<Group> => {
+    const [group] = await db.select().from(groups).where(eq(groups.id, groupData.id));
     return group;
 };
 
-export const joinGroupById = async (groupId: number, userId: number) => {
-    const [group] = await db.select().from(groups).where(eq(groups.id, groupId));
+export const joinGroupById = async (groupData: UidIdGroupInput): Promise<boolean> => {
+    const [group] = await db.select().from(groups).where(eq(groups.id, groupData.id));
     if (!group) {
         return false;
     }
     const [existingRequest] = await db.select().from(joinrequests)
-        .where(and(eq(joinrequests.groupsId, groupId), eq(joinrequests.usersId, userId)));
+        .where(and(eq(joinrequests.groupsId, groupData.id), eq(joinrequests.usersId, groupData.userId)));
     if (existingRequest) {
         return false;
     }
-    await db.insert(joinrequests).values({ groupsId: groupId, usersId: userId });
+    await db.insert(joinrequests).values({ groupsId: groupData.id, usersId: groupData.userId });
     return true;
 };
 
-const isGroupMember = async (groupId: number, userId: number) => {
+const isGroupMember = async (groupData: UidIdGroupInput): Promise<boolean> => {
     const [member] = await db.select().from(groupmembers)
-        .where(and(eq(groupmembers.groupsId, groupId), eq(groupmembers.usersId, userId)));
+        .where(and(eq(groupmembers.groupsId, groupData.id), eq(groupmembers.usersId, groupData.userId)));
     return !!member;
 };
 
-export const acceptJoinRequest = async (groupId: number, userId: number) => {
-    const [group] = await db.select().from(groups).where(eq(groups.id, groupId));
-    if (!group || group.ownersId !== userId) {
+export const acceptJoinRequest = async (groupData: JoinGroupInput): Promise<boolean> => {
+    const [group] = await db.select().from(groups).where(eq(groups.id, groupData.id));
+    if (!group || group.ownersId !== groupData.ownerId) {
         return false;
     }
     const [request] = await db.select().from(joinrequests)
-        .where(and(eq(joinrequests.groupsId, groupId), eq(joinrequests.usersId, userId), eq(joinrequests.status, 'pending')));
+        .where(and(eq(joinrequests.groupsId, groupData.id), eq(joinrequests.usersId, groupData.userId), eq(joinrequests.status, 'pending')));
     if (!request) {
         return false;
     }
     await db.update(joinrequests)
         .set({ status: 'accepted' })
         .where(eq(joinrequests.id, request.id));
-    await db.insert(groupmembers).values({ groupsId: groupId, usersId: userId });
+    await db.insert(groupmembers).values({ groupsId: groupData.id, usersId: groupData.userId });
     return true;
 };
 
-export const removeMember = async (groupId: number, userId: number, ownerId: number | null) => {
-    const [group] = await db.select().from(groups).where(eq(groups.id, groupId));
+export const removeMember = async (groupData: RemoveMemberInput): Promise<boolean> => {
+    const [group] = await db.select().from(groups).where(eq(groups.id, groupData.id));
     if (!group) {
         return false;
     }
-    if (ownerId !== null) {
-        if (group.ownersId !== ownerId) {
+    if (groupData.ownerId !== null) {
+        if (group.ownersId !== groupData.ownerId) {
             return false;
         }
     } else {
-        if (!await isGroupMember(groupId, userId)) {
+        if (!await isGroupMember({ id: groupData.id, userId: groupData.userId })) {
             return false;
         }
     }
     await db.delete(groupmembers)
-        .where(and(eq(groupmembers.groupsId, groupId), eq(groupmembers.usersId, userId)));
+        .where(and(eq(groupmembers.groupsId, groupData.id), eq(groupmembers.usersId, groupData.userId)));
     return true;
 };
 
-export const addContent = async (groupId: number, userId: number, movieId: number) => {
-    if (!await isGroupMember(groupId, userId)) {
+export const addContent = async (groupData: CreateGroupContentInput): Promise<boolean> => {
+    if (!await isGroupMember({ id: groupData.groupsId, userId: groupData.addedByUserId })) {
         return false;
     }
-    await db.insert(groupcontent).values({ groupsId: groupId, addedByUserId: userId, movieId });
+    await db.insert(groupcontent).values({ groupsId: groupData.groupsId, addedByUserId: groupData.addedByUserId, movieId: groupData.movieId });
     return true;
 };
 
-export const getContentFromModel = async (groupId: number, userId: number) => {
-    if (!await isGroupMember(groupId, userId)) {
-        return null;
+export const getContentFromModel = async (groupData: UidIdGroupInput) => {
+    if (!await isGroupMember({ id: groupData.id, userId: groupData.userId })) {
+        return false;
     }
-    return await db.select().from(groupcontent).where(eq(groupcontent.groupsId, groupId));
+    const [content] = await db.select().from(groupcontent).where(eq(groupcontent.groupsId, groupData.id));
+    return content;
 };
