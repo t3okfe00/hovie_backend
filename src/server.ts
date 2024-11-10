@@ -7,12 +7,15 @@ import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import userRouter from "./routes/userRouter";
 import groupRouter from "./routes/groupRouter";
+import movieRouter from "./routes/movieRouter";
+
 import morgan from "morgan";
 const app = express();
 const port = 3000;
 
 import { absolutePath } from "swagger-ui-dist";
 import ApiError from "./helpers/ApiError";
+
 const pathToSwaggerUi = absolutePath();
 
 const swaggerOptions = {
@@ -40,6 +43,7 @@ app.use(cookieParser());
 app.use(express.static(pathToSwaggerUi));
 app.use("/user", userRouter);
 app.use("/", groupRouter);
+app.use('/movie', movieRouter);
 
 // to handle requests to the endpoints that does not exist
 //important to place this after all routes since if this runs
