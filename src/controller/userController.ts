@@ -17,9 +17,10 @@ export const deleteUser = async (
   next: NextFunction
 ) => {
   const userId = req.user.userId;
+
   try {
     await deleteUserById(userId);
-    res.status(204).json({ message: "User deleted succesfully" });
+    res.status(204).json({ message: "User deleted" });
   } catch (error) {
     next(new ApiError("User could not be deleted", 500));
   }

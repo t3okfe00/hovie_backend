@@ -9,7 +9,7 @@ const router = Router();
 
 router.post("/login", loginUser);
 router.post("/signup", validateSignUp, signUp);
-router.delete("/:userId", authenticateJWT, deleteUser);
+router.delete("/delete", authenticateJWT, deleteUser);
 router.post("/logout", authenticateJWT, logOutUser);
 
 export default router;

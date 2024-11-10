@@ -1,9 +1,11 @@
-import { logOutUser } from "./../../controller/userController";
 import { expect } from "chai";
-import { initializeTestDb } from "../functions/userFunctions";
+
 import { createUser } from "../../models/userModel";
-import { log, profile } from "console";
-import { loginUser } from "../../controller/authController";
+import { getUserByEmail } from "../../models/userModel";
+import { profile } from "console";
+import { User } from "../../types";
+import { cookie } from "express-validator";
+import { initializeTestDb } from "../functions/userFunctions";
 
 const base_url = "http://localhost:3000";
 
@@ -64,5 +66,72 @@ describe("POST LOGOUT", () => {
     expect(logoutCookie).include("Max-Age=0");
     expect(logoutCookie).include("HttpOnly");
     expect(logoutCookie).include("SameSite=Strict");
+  });
+});
+
+describe("DELETE /user/delete", () => {
+  let authCookie: any;
+  beforeEach(async () => {
+    // Create and login a test user
+    const testUser = {
+      name: "deletetest",
+      email: "deletetest@example.com",
+      password: "Password123",
+      profileUrl: "/users/deletetest",
+    };
+
+    await createUser(testUser);
+
+    const loginResponse = await fetch(base_url + "/user/login", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: testUser.email,
+        password: testUser.password,
+      }),
+    });
+
+    let cookie = loginResponse.headers.get("set-cookie");
+    if (cookie) {
+      authCookie = cookie;
+    } else {
+      throw new Error("No cookie found in login response, cannot delete user.");
+    }
+  });
+  afterEach(async () => {
+    // Clean up test data
+    await initializeTestDb();
+  });
+
+  it("should successfully delete authenticated user", async () => {
+    const response = await fetch(`${base_url}/user/delete`, {
+      method: "delete",
+      headers: {
+        Cookie: authCookie,
+      },
+    });
+
+    expect(response.status).to.equal(204);
+  });
+
+  it("should return 401 when trying to delete without authentication", async () => {
+    const response = await fetch(`${base_url}/user/delete`, {
+      method: "delete",
+    });
+
+    expect(response.status).to.equal(401);
+  });
+
+  it("should return 403 when trying to delete with invalid JWT", async () => {
+    const response = await fetch(`${base_url}/user/delete`, {
+      method: "delete",
+      headers: {
+        Cookie: "jwt=invalid.token.here",
+      },
+    });
+
+    expect(response.status).to.equal(403);
   });
 });
