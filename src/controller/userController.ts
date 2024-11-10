@@ -17,9 +17,10 @@ export const deleteUser = async (
   next: NextFunction
 ) => {
   const userId = req.user.userId;
+
   try {
     await deleteUserById(userId);
-    res.status(204).json({ message: "User deleted succesfully" });
+    res.status(204).json({ message: "User deleted" });
   } catch (error) {
     next(new ApiError("User could not be deleted", 500));
   }
@@ -30,7 +31,13 @@ export const logOutUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("Logging out the user");
+  const token = req.cookies.jwt;
+  console.log("TOKEN", token);
+
+  if (!token) {
+    // If there's no token, the user is already logged out
+    next(new ApiError("User is already logged out", 400));
+  }
 
   res.cookie("jwt", "", {
     httpOnly: true,

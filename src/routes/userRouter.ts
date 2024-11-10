@@ -7,16 +7,9 @@ import { authenticateJWT } from "../middleware/authenticateJWT";
 
 const router = Router();
 
-router.get(
-  "/",
-  authenticateJWT,
-  (req: Request, res: Response, next: NextFunction) => {
-    res.send("Welcome to the route!");
-  }
-);
 router.post("/login", loginUser);
 router.post("/signup", validateSignUp, signUp);
-router.delete("/:userId", authenticateJWT, deleteUser);
-router.get("/logout", logOutUser);
+router.delete("/delete", authenticateJWT, deleteUser);
+router.post("/logout", authenticateJWT, logOutUser);
 
 export default router;
