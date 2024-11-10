@@ -30,7 +30,13 @@ export const logOutUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("Logging out the user");
+  const token = req.cookies.jwt;
+  console.log("TOKEN", token);
+
+  if (!token) {
+    // If there's no token, the user is already logged out
+    next(new ApiError("User is already logged out", 400));
+  }
 
   res.cookie("jwt", "", {
     httpOnly: true,
