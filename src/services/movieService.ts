@@ -25,15 +25,21 @@ type TMDBResponse<T> = {
 };
 
 // Utility function to fetch data from TMDB API
-async function fetchFromTMDB<T>(endpoint: string, params = { page }) {
-  console.log(`page number`, params.page);
-  const url = `https://api.themoviedb.org/3/movie/popular?page=${params.page}`;
+async function fetchFromTMDB<T>(
+  endpoint: string,
+  params: Record<string, any> = {}
+): Promise<T> {
+  const queryString = new URLSearchParams(
+    params as Record<string, string>
+  ).toString();
+
+  const url = `https://api.themoviedb.org/3${endpoint}?${queryString}`;
+  console.log("Final url constructed", url);
   const options = {
     method: "GET",
     headers: {
       accept: "application/json",
-      Authorization:
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmY2VmYjlmYjRlMWYxZjg2OTE0ZmE4MjRiZjQ0MWU3YSIsIm5iZiI6MTczMTE3NzQxMS44MTIzMzk1LCJzdWIiOiI2NzI0ZmQzYjM0NDk0ODFiYWNhOWEwN2EiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.DxnZFI7uGTab3xsLXf_S0JepR8KY7Mls-aEh4E0kTkU",
+      Authorization: `Bearer ${API_KEY}`,
     },
   };
 
@@ -49,17 +55,37 @@ async function fetchFromTMDB<T>(endpoint: string, params = { page }) {
 
 // Service functions with appropriate types
 
-async function getPopularMovies(page) {
-  console.log(`GET POPULAR`, page);
-  return fetchFromTMDB("/movie/popular", { page: page });
+async function getPopularMovies(
+  page: number,
+  language: string
+): Promise<TMDBResponse<Movie>> {
+  return fetchFromTMDB("/movie/popular", { page, language });
 }
 
 async function getMovieDetails(movieId: number): Promise<Movie> {
+  console.log("MOVIE ID", movieId);
   return fetchFromTMDB(`/movie/${movieId}`);
 }
 
-async function searchMovies(query: string): Promise<TMDBResponse<Movie>> {
-  return fetchFromTMDB("/search/movie", { query });
+async function searchMovies(
+  query: string,
+  {
+    primaryReleaseYear,
+    page,
+    region,
+    year,
+  }: {
+    primaryReleaseYear?: string;
+    page: number;
+    region?: string;
+    year?: string;
+  }
+): Promise<TMDBResponse<Movie>> {
+  const params: Record<string, string> = { query, page: page.toString() };
+  if (primaryReleaseYear) params.primary_release_year = primaryReleaseYear;
+  if (region) params.region = region;
+  if (year) params.year = year;
+  return fetchFromTMDB("/search/movie", params);
 }
 
 async function getMovieGenres(): Promise<{ genres: Genre[] }> {

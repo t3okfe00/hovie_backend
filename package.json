@@ -32,11 +32,8 @@
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
-<<<<<<< HEAD
     "cors": "^2.8.5",
     "cors-anywhere": "^0.4.4",
-=======
->>>>>>> b5199050c7135c136fa42be6d7d1ba69581c616e
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.36.0",
     "express": "^4.21.1",
@@ -53,11 +50,7 @@
     "uuid": "^11.0.2"
   },
   "devDependencies": {
-<<<<<<< HEAD
-    "@types/axios": "^0.14.4",
-=======
     "@swc/register": "^0.1.10",
->>>>>>> b5199050c7135c136fa42be6d7d1ba69581c616e
     "@types/bcrypt": "^5.0.2",
     "@types/chai": "^5.0.1",
     "@types/cookie-parser": "^1.4.7",
@@ -71,15 +64,10 @@
     "@types/pg": "^8.11.10",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-dist": "^3.30.5",
-<<<<<<< HEAD
-    "cross-env": "^7.0.3",
-    "drizzle-kit": "^0.28.0",
-=======
     "chai": "^5.1.2",
     "cross-env": "^7.0.3",
     "drizzle-kit": "^0.27.1",
     "mocha": "^10.8.2",
->>>>>>> b5199050c7135c136fa42be6d7d1ba69581c616e
     "nodemon": "^3.1.7",
     "ts-mocha": "^10.0.0",
     "ts-node": "^10.9.2",

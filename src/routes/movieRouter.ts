@@ -49,6 +49,25 @@ router.get("/popular", getPopularMovies);
 
 /**
  * @swagger
+ * /movie/search:
+ *   get:
+ *     summary: Search for movies
+ *     description: Search for movies based on a query
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         required: true
+ *         description: The search term
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Search results returned successfully
+ */
+router.get("/search", searchMovies);
+
+/**
+ * @swagger
  * /movie/{id}:
  *   get:
  *     summary: Get movie details
@@ -70,25 +89,6 @@ router.get("/:id", getMovieDetails);
 
 /**
  * @swagger
- * /movie/search:
- *   get:
- *     summary: Search for movies
- *     description: Search for movies based on a query
- *     parameters:
- *       - in: query
- *         name: query
- *         required: true
- *         description: The search term
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Search results returned successfully
- */
-router.get("/movie/search", searchMovies);
-
-/**
- * @swagger
  * /movie/genres:
  *   get:
  *     summary: Get movie genres
@@ -97,7 +97,7 @@ router.get("/movie/search", searchMovies);
  *       200:
  *         description: Successfully retrieved movie genres
  */
-router.get("/movie/genres", getMovieGenres);
+router.get("/genres", getMovieGenres);
 
 /**
  * @swagger
@@ -116,7 +116,7 @@ router.get("/movie/genres", getMovieGenres);
  *       200:
  *         description: Successfully retrieved movie credits
  */
-router.get("/movie/:id/credits", getMovieCredits);
+router.get("/:id/credits", getMovieCredits);
 
 /**
  * @swagger
@@ -135,7 +135,7 @@ router.get("/movie/:id/credits", getMovieCredits);
  *       200:
  *         description: Successfully retrieved similar movies
  */
-router.get("/movie/:id/similar", getSimilarMovies);
+router.get("/:id/similar", getSimilarMovies);
 
 /**
  * @swagger
@@ -154,7 +154,7 @@ router.get("/movie/:id/similar", getSimilarMovies);
  *       200:
  *         description: Successfully retrieved movie recommendations
  */
-router.get("/movie/:id/recommendations", getMovieRecommendations);
+router.get("/:id/recommendations", getMovieRecommendations);
 
 /**
  * @swagger
@@ -173,7 +173,7 @@ router.get("/movie/:id/recommendations", getMovieRecommendations);
  *       200:
  *         description: Successfully retrieved movie videos
  */
-router.get("/movie/:id/videos", getMovieVideos);
+router.get("/:id/videos", getMovieVideos);
 
 /**
  * @swagger
@@ -192,7 +192,7 @@ router.get("/movie/:id/videos", getMovieVideos);
  *       200:
  *         description: Successfully retrieved movie images
  */
-router.get("/movie/:id/images", getMovieImages);
+router.get("/:id/images", getMovieImages);
 
 /**
  * @swagger
@@ -211,6 +211,6 @@ router.get("/movie/:id/images", getMovieImages);
  *       200:
  *         description: Successfully retrieved movie release dates
  */
-router.get("/movie/:id/releases", getMovieReleaseDates);
+router.get("/:id/releases", getMovieReleaseDates);
 
 export default router;

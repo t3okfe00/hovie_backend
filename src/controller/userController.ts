@@ -32,7 +32,7 @@ export const logOutUser = async (
   next: NextFunction
 ) => {
   const token = req.cookies.jwt;
-  console.log("TOKEN", token);
+  console.log("Logout user route");
 
   if (!token) {
     // If there's no token, the user is already logged out
@@ -47,5 +47,3 @@ export const logOutUser = async (
   });
   res.json({ message: "Logged Out" });
 };
-
-export { getUsers };

@@ -40,7 +40,7 @@ export const signUp = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   const { name, email, password } = req.body;
   const temporaryProfileUrl = `/users/${uuidv4()}`;
   const userDataToDB = {
@@ -80,7 +80,7 @@ export const loginUser = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -99,7 +99,7 @@ export const loginUser = async (
     return next(new ApiError("Invalid Credentials", 401));
   }
 
-  const token = jwt.sign(
+  const token: string = jwt.sign(
     { userId: user[0].id, email: user[0].email }, // Payload (you can include more info here)
     process.env.JWT_SECRET as jwt.Secret, // Secret key
     { expiresIn: "1h" } // Token expiration time (e.g., 24 hour)
