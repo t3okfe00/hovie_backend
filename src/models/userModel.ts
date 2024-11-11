@@ -12,6 +12,7 @@ import { db } from "../db";
 import { User, CreateUserInput } from "../types";
 import { hashPassword } from "../utils/hashPassword";
 import { usersTable } from "../dbtest/schematest";
+import ApiError from "../helpers/ApiError";
 
 export const users = pgTable(
   "users",
@@ -40,6 +41,14 @@ export const getAllUsers = async () => {
 export const createUser = async (userData: CreateUserInput): Promise<User> => {
   const hashedPassword = await hashPassword(userData.password);
 
+  const existingUser = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, userData.email));
+  if (existingUser.length > 0) {
+    throw new ApiError("Duplicate Email", 409);
+  }
+
   await db.insert(users).values({ ...userData, password: hashedPassword });
 
   const [newUser] = await db
@@ -47,7 +56,6 @@ export const createUser = async (userData: CreateUserInput): Promise<User> => {
     .from(users)
     .where(eq(users.email, userData.email)); // Assuming email is unique
 
-  console.log("NEW USER RETURNED!", newUser);
   return newUser;
 };
 

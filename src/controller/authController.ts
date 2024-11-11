@@ -52,7 +52,6 @@ export const signUp = async (
 
   // Sending data with profileUrl = uuid ID.
 
-  console.log("SENDING INFORMATION :", userDataToDB);
   try {
     const newUser: User = await createUser(userDataToDB);
 

@@ -8,7 +8,7 @@ export const authenticateJWT = (
   next: NextFunction
 ) => {
   const token = req.cookies.jwt;
-  console.log("Token", token);
+
   if (!token) {
     return next(new ApiError("Unauthorized", 401));
   }
@@ -22,8 +22,7 @@ export const authenticateJWT = (
         console.log("Error happened", err);
         return next(new ApiError("Unauthorized token", 403));
       }
-      console.log("Request is from valid user!");
-      console.log("User", user);
+
       req.user = user;
       next();
     }
