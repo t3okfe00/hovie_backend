@@ -70,11 +70,21 @@ export const searchMovies = (req: Request, res: Response, next: NextFunction) =>
     },
     next
   );
+
 export const getMovieGenres = (
   req: Request,
   res: Response,
   next: NextFunction
-) => handleResponse(res, movieService.getMovieGenres, next);
+) =>
+  handleResponse(
+    res,
+    () => {
+      console.log("GET MOVIE GENRES");
+      return movieService.getMovieGenres();
+    },
+    next
+  );
+
 export const getMovieCredits = (
   req: Request,
   res: Response,
@@ -95,7 +105,9 @@ export const getSimilarMovies = (
   handleResponse(
     res,
     () => {
-      return movieService.getSimilarMovies(parseInt(req.params.id));
+      let page = parseInt((req.query.page as string) || "1");
+      let movieId = parseInt(req.params.id);
+      return movieService.getSimilarMovies(movieId, page);
     },
     next
   );
@@ -107,7 +119,9 @@ export const getMovieRecommendations = (
   handleResponse(
     res,
     () => {
-      return movieService.getMovieRecommendations(parseInt(req.params.id));
+      let movieId = parseInt(req.params.id);
+      let page = parseInt((req.query.page as string) || "1");
+      return movieService.getMovieRecommendations(movieId, page);
     },
     next
   );
@@ -131,7 +145,8 @@ export const getMovieImages = (
   handleResponse(
     res,
     () => {
-      return movieService.getMovieImages(parseInt(req.params.id));
+      let movieId = parseInt(req.params.id);
+      return movieService.getMovieImages(movieId);
     },
     next
   );
