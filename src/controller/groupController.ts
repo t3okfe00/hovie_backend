@@ -5,7 +5,9 @@ import {
     deleteGroupById,
     getGroupById,
     joinGroupById,
-    acceptJoinRequest, removeMember, addContent, getContentFromModel
+    acceptJoinRequest, removeMember, addContent, getContentFromModel,
+    addMember,
+    removeMembersByGroupId
 } from "../models/groupModel";
 import {NextFunction} from "express";
 import ApiError from "../helpers/ApiError";
@@ -25,12 +27,17 @@ export const getGroups = async (req: Request, res: Response, next: NextFunction)
 
 export const createGroup = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { name, ownersId } = req.query;
+        const { name, ownersId } = req.body;
         if (!name || !ownersId) {
             next(new ApiError("name and ownersId are required", 400));
             return;
         }
+        // Create the group and get the new group's ID
         const newGroup: Group = await postGroup({ name: String(name).replace(/"/g, ''), ownersId: Number(ownersId) });
+
+        // Add the owner as a member of the group using the new group's ID
+        await addMember({ groupId: newGroup.id, userId: ownersId });
+
         res.status(201).json(newGroup);
     } catch (error) {
         next(new ApiError("Error creating group", 500));
@@ -44,9 +51,14 @@ export const deleteGroup = async (req: Request, res: Response, next: NextFunctio
             next(new ApiError("id is required", 400));
             return;
         }
+        // Remove all members of the group
+        await removeMembersByGroupId({ groupId: Number(id) });
+
+        // Delete the group
         const deleted = await deleteGroupById({ id: Number(id) });
         if (!deleted) {
             next(new ApiError("Group not found", 404));
+            return;
         }
         res.status(204).send();
     } catch (error) {

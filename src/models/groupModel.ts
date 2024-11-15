@@ -11,6 +11,7 @@ import { db } from "../db";
 import {users} from "./userModel";
 import {groupcontent, groupmembers} from "../db/schema";
 import {
+    AddMemberInput,
     CreateGroupContentInput,
     CreateGroupInput,
     Group,
@@ -144,4 +145,12 @@ export const getContentFromModel = async (groupData: UidIdGroupInput) => {
     }
     const [content] = await db.select().from(groupcontent).where(eq(groupcontent.groupsId, groupData.id));
     return content;
+};
+
+export const addMember = async (groupData: AddMemberInput): Promise<void> => {
+    await db.insert(groupmembers).values({ groupsId: groupData.groupId, usersId: groupData.userId });
+};
+
+export const removeMembersByGroupId = async ({ groupId }: { groupId: number }): Promise<void> => {
+    await db.delete(groupmembers).where(eq(groupmembers.groupsId, groupId));
 };
