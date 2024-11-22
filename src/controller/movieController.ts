@@ -14,7 +14,6 @@ async function handleResponse(
     // console.log(`DATA FROM HANDLE RESPONSE`,data)
     res.status(200).json(data); // Assuming `data` is of type `SuccessResponse`
   } catch (error) {
-    console.log(" AY RUN ! XD");
     next(error);
   }
 }
@@ -42,7 +41,7 @@ export const getMovieDetails = (
   handleResponse(
     res,
     () => {
-      console.log("GET MOVIE DETAILS", req.params.id);
+      console.log("getMovieDetails", req.params.id);
       return movieService.getMovieDetails(parseInt(req.params.id));
     },
     next
@@ -70,11 +69,21 @@ export const searchMovies = (req: Request, res: Response, next: NextFunction) =>
     },
     next
   );
+
 export const getMovieGenres = (
   req: Request,
   res: Response,
   next: NextFunction
-) => handleResponse(res, movieService.getMovieGenres, next);
+) =>
+  handleResponse(
+    res,
+    () => {
+      console.log("-----------------------------------------");
+      return movieService.getMovieGenres();
+    },
+    next
+  );
+
 export const getMovieCredits = (
   req: Request,
   res: Response,

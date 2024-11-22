@@ -11,7 +11,6 @@ import {
 
 // services/movieService.js
 // const axios = require('axios');
-import axios from "axios";
 
 const API_KEY = process.env.TMDB_API_KEY; // Replace with your TMDB API key
 const BASE_URL = "http://localhost:3000";
@@ -34,7 +33,8 @@ async function fetchFromTMDB<T>(
   ).toString();
 
   const url = `https://api.themoviedb.org/3${endpoint}?${queryString}`;
-  console.log("Final url constructed", url);
+  console.log("Url constuctured for endpoint", endpoint);
+
   const options = {
     method: "GET",
     headers: {
@@ -89,6 +89,7 @@ async function searchMovies(
 }
 
 async function getMovieGenres(): Promise<{ genres: Genre[] }> {
+  console.log("--Get Movie Genres Run!");
   return fetchFromTMDB("/genre/movie/list");
 }
 

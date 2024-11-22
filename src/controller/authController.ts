@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 import { User } from "../types";
 import jwt from "jsonwebtoken";
+
 export const validateSignUp: RequestHandler[] = [
   body("email").isEmail().withMessage("Invalid email format"),
   body("password")
