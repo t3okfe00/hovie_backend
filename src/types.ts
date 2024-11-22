@@ -60,8 +60,10 @@ export type JoinGroupInput = {
   ownerId: number;
 };
 
-
-
+export type AddMemberInput = {
+    groupId: number;
+    userId: number;
+}
 
 // Movie Type - Represents a movie object returned by TMDB API
 export type Movie = {

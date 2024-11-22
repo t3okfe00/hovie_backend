@@ -83,6 +83,18 @@ router.get("/search", searchMovies);
 
 /**
  * @swagger
+ * /movie/genres:
+ *   get:
+ *     summary: Get movie genres
+ *     description: Fetch a list of all available movie genres
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved movie genres
+ */
+router.get("/genres", getMovieGenres);
+
+/**
+ * @swagger
  * /movie/{id}:
  *   get:
  *     summary: Get movie details

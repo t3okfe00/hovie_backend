@@ -97,14 +97,18 @@ async function getMovieCredits(movieId: number): Promise<MovieCredits> {
   return fetchFromTMDB(`/movie/${movieId}/credits`);
 }
 
-async function getSimilarMovies(movieId: number): Promise<TMDBResponse<Movie>> {
-  return fetchFromTMDB(`/movie/${movieId}/similar`);
+async function getSimilarMovies(
+  movieId: number,
+  page: number
+): Promise<TMDBResponse<Movie>> {
+  return fetchFromTMDB(`/movie/${movieId}/similar`, { page });
 }
 
 async function getMovieRecommendations(
-  movieId: number
+  movieId: number,
+  page: number
 ): Promise<TMDBResponse<MovieRecommendation>> {
-  return fetchFromTMDB(`/movie/${movieId}/recommendations`);
+  return fetchFromTMDB(`/movie/${movieId}/recommendations`, { page });
 }
 
 async function getMovieVideos(movieId: number): Promise<MovieVideos> {
