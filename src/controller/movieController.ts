@@ -2,7 +2,6 @@
 import { NextFunction, Request, Response } from "express";
 import movieService from "../services/movieService";
 import ApiError from "../helpers/ApiError";
-import { error } from "console";
 
 async function handleResponse(
   res: Response,
