@@ -1,13 +1,6 @@
-import {
-    pgTable,
-    foreignKey,
-    serial,
-    integer,
-    varchar,
-
-} from "drizzle-orm/pg-core";
-import {eq, and} from "drizzle-orm";
-import { db } from "../db";
+import {foreignKey, integer, pgTable, serial, varchar,} from "drizzle-orm/pg-core";
+import {and, eq, sql} from "drizzle-orm";
+import {db} from "../db";
 import {users} from "./userModel";
 import {groupcontent, groupmembers} from "../db/schema";
 import {
@@ -25,6 +18,9 @@ export const groups = pgTable("groups", {
     id: serial().primaryKey().notNull(),
     name: varchar({ length: 45 }).notNull(),
     ownersId: integer("owners_id").notNull(),
+    description: varchar({ length: 255 }).notNull(),
+    category: varchar({ length: 45 }).notNull(),
+    pictureUrl: varchar({ length: 255 }).notNull()
 }, (table) => {
     return {
         groupsOwnersIdFkey: foreignKey({
@@ -60,8 +56,10 @@ export const getAllGroups = async () => {
 };
 
 export const postGroup = async (groupData: CreateGroupInput): Promise<Group> => {
-    await db.insert(groups).values(groupData).returning();
-    const [newGroup] = await db.select().from(groups).where(eq(groups.name, groupData.name));
+    const [newGroup] = await db.insert(groups).values({
+        ...groupData,
+        pictureUrl: groupData.pictureUrl // Ensure pictureUrl is included
+    }).returning();
     return newGroup;
 };
 
@@ -148,9 +146,80 @@ export const getContentFromModel = async (groupData: UidIdGroupInput) => {
 };
 
 export const addMember = async (groupData: AddMemberInput): Promise<void> => {
-    await db.insert(groupmembers).values({ groupsId: groupData.groupId, usersId: groupData.userId });
+    await db.insert(groupmembers).values({ groupsId: groupData.groupId, usersId: groupData.userId, role: groupData.role });
 };
 
 export const removeMembersByGroupId = async ({ groupId }: { groupId: number }): Promise<void> => {
     await db.delete(groupmembers).where(eq(groupmembers.groupsId, groupId));
+};
+
+export const findFeaturedGroups = async (userId: number) => {
+    return await db
+        .select({
+            id: groups.id,
+            name: groups.name,
+            ownersId: groups.ownersId,
+            description: groups.description,
+            category: groups.category,
+            pictureUrl: groups.pictureUrl,
+            members: sql`COUNT(${groupmembers}.id)`.as('members')
+        })
+        .from(groups)
+        .leftJoin(groupmembers, sql`${groups}.id = ${groupmembers}.groups_id`)
+        .where(sql`${groupmembers}.users_id != ${userId} OR ${groupmembers}.role != 'owner'`)
+        .groupBy(groups.id)
+        .orderBy(sql`RANDOM()`)
+        .limit(4);
+};
+
+export const findPopularGroups = async (userId: number) => {
+    return await db
+        .select({
+            id: groups.id,
+            name: groups.name,
+            ownersId: groups.ownersId,
+            description: groups.description,
+            category: groups.category,
+            pictureUrl: groups.pictureUrl,
+            members: sql`COUNT(${groupmembers}.id)`.as('members')
+        })
+        .from(groups)
+        .leftJoin(groupmembers, sql`${groups}.id = ${groupmembers}.groups_id`)
+        .where(sql`${groupmembers}.users_id != ${userId} OR ${groupmembers}.role != 'owner'`)
+        .groupBy(groups.id)
+        .orderBy(sql`COUNT(${groupmembers}.id) DESC`)
+        .limit(4);
+};
+
+export const findYourGroups = async (userId: number) => {
+    return await db
+        .select({
+            id: groups.id,
+            name: groups.name,
+            ownersId: groups.ownersId,
+            description: groups.description,
+            category: groups.category,
+            pictureUrl: groups.pictureUrl,
+            members: sql`(SELECT COUNT(*) FROM ${groupmembers} WHERE ${groupmembers}.groups_id = ${groups}.id)`.as('members'),
+            role: groupmembers.role
+        })
+        .from(groups)
+        .leftJoin(groupmembers, sql`${groups}.id = ${groupmembers}.groups_id`)
+        .where(eq(groupmembers.usersId, userId))
+        .groupBy(groups.id, groupmembers.role);
+};
+
+export const findGroupsByName = async (name: string) => {
+    return await db
+        .select({
+            id: groups.id,
+            name: groups.name,
+            ownersId: groups.ownersId,
+            description: groups.description,
+            category: groups.category,
+            pictureUrl: groups.pictureUrl,
+            members: sql`(SELECT COUNT(*) FROM ${groupmembers} WHERE ${groupmembers}.groups_id = ${groups}.id)`.as('members')
+        })
+        .from(groups)
+        .where(sql`${groups.name} ILIKE ${'%' + name + '%'}`);
 };

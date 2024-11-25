@@ -17,12 +17,18 @@ export type CreateUserInput = {
 export type Group = {
   id: number;
   name: string;
+  description: string;
   ownersId: number;
+  category: string;
+  pictureUrl: string;
 };
 
-export type CreateGroupInput = {
+export interface CreateGroupInput {
   name: string;
   ownersId: number;
+  category: string;
+  description: string;
+  pictureUrl: string;
 }
 
 export type IdGroupInput = {
@@ -63,6 +69,7 @@ export type JoinGroupInput = {
 export type AddMemberInput = {
     groupId: number;
     userId: number;
+    role: string;
 }
 
 // Movie Type - Represents a movie object returned by TMDB API
