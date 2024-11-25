@@ -7,11 +7,15 @@ import {
     joinGroupById,
     acceptJoinRequest, removeMember, addContent, getContentFromModel,
     addMember,
-    removeMembersByGroupId
+    removeMembersByGroupId, findFeaturedGroups, findPopularGroups, findYourGroups, findGroupsByName
 } from "../models/groupModel";
 import {NextFunction} from "express";
 import ApiError from "../helpers/ApiError";
 import {Group} from "../types";
+import {promisify} from "util";
+import fs from "fs";
+import path from "path";
+const unlinkAsync = promisify(fs.unlink);
 
 
 
@@ -27,16 +31,25 @@ export const getGroups = async (req: Request, res: Response, next: NextFunction)
 
 export const createGroup = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { name, ownersId } = req.body;
-        if (!name || !ownersId) {
-            next(new ApiError("name and ownersId are required", 400));
+        const { name, ownersId, category, description } = req.body;
+        const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+
+        if (!name || !ownersId || !category || !description || !imagePath) {
+            next(new ApiError("name, ownersId, category, description, and imagePath are required", 400));
             return;
         }
-        // Create the group and get the new group's ID
-        const newGroup: Group = await postGroup({ name: String(name).replace(/"/g, ''), ownersId: Number(ownersId) });
 
-        // Add the owner as a member of the group using the new group's ID
-        await addMember({ groupId: newGroup.id, userId: ownersId });
+        // Create the group and get the new group's ID
+        const newGroup: Group = await postGroup({
+            name: String(name).replace(/"/g, ''),
+            ownersId: Number(ownersId),
+            category: String(category).replace(/"/g, ''),
+            description: String(description).replace(/"/g, ''),
+            pictureUrl: imagePath
+        });
+
+        // Add the owner as a member of the group with the role "owner"
+        await addMember({ groupId: newGroup.id, userId: ownersId, role: 'owner' });
 
         res.status(201).json(newGroup);
     } catch (error) {
@@ -51,6 +64,14 @@ export const deleteGroup = async (req: Request, res: Response, next: NextFunctio
             next(new ApiError("id is required", 400));
             return;
         }
+
+        // Get the group details to retrieve the image path
+        const group = await getGroupById({ id: Number(id) });
+        if (!group) {
+            next(new ApiError("Group not found", 404));
+            return;
+        }
+
         // Remove all members of the group
         await removeMembersByGroupId({ groupId: Number(id) });
 
@@ -60,6 +81,16 @@ export const deleteGroup = async (req: Request, res: Response, next: NextFunctio
             next(new ApiError("Group not found", 404));
             return;
         }
+
+        // Delete the image file from the uploads folder
+        const imagePath = path.join('uploads', path.basename(group.pictureUrl));
+        try {
+            await unlinkAsync(imagePath);
+        } catch (error) {
+            // @ts-ignore
+            console.error(`Failed to delete image file: ${error.message}`);
+        }
+
         res.status(204).send();
     } catch (error) {
         next(new ApiError("Error deleting group", 500));
@@ -176,5 +207,77 @@ export const getContentFromGroup = async (req: Request, res: Response, next: Nex
         res.status(200).json(content);
     } catch (error) {
         next(new ApiError("Error fetching content from group", 500));
+    }
+};
+
+export const getFeaturedGroups = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { userId } = req.body;
+        if (!userId) {
+            next(new ApiError("userId is required", 400));
+            return;
+        }
+
+        const groups = await findFeaturedGroups(userId);
+        res.json(groups.map(group => ({
+            ...group,
+            pictureUrl: group.pictureUrl
+        })));
+    } catch (error) {
+        next(new ApiError("Failed to fetch groups from the database", 500));
+    }
+};
+
+export const getPopularGroups = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { userId } = req.body;
+        if (!userId) {
+            next(new ApiError("userId is required", 400));
+            return;
+        }
+
+        const groups = await findPopularGroups(userId);
+        res.json(groups.map(group => ({
+            ...group,
+            pictureUrl: group.pictureUrl
+        })));
+    } catch (error) {
+        next(new ApiError("Failed to fetch popular groups from the database", 500));
+    }
+};
+
+export const getYourGroups = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { userId } = req.body;
+        if (!userId) {
+            next(new ApiError("userId is required", 400));
+            return;
+        }
+
+        const yourGroups = await findYourGroups(Number(userId));
+        res.status(200).json(yourGroups.map(group => ({
+            ...group,
+            pictureUrl: group.pictureUrl
+        })));
+    } catch (error) {
+        next(new ApiError("Error fetching your groups", 500));
+    }
+};
+
+export const searchGroups = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { name } = req.query;
+        if (!name) {
+            next(new ApiError("name query parameter is required", 400));
+            return;
+        }
+
+        const groups = await findGroupsByName(String(name));
+        res.status(200).json(groups.map(group => ({
+            ...group,
+            pictureUrl: group.pictureUrl
+        })));
+    } catch (error) {
+        next(new ApiError("Error searching for groups", 500));
     }
 };

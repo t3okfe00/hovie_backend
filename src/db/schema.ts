@@ -50,9 +50,10 @@ export const reviews = pgTable("reviews", {
 export const groups = pgTable("groups", {
   id: serial().primaryKey().notNull(),
   name: varchar({ length: 45 }).notNull(),
+  description: varchar({ length: 255 }),
   ownersId: integer("owners_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
 });
 
 // `favorites` table with cascading behavior for both delete and update
