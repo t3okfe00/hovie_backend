@@ -11,13 +11,20 @@ import groupRouter from "./routes/groupRouter";
 import movieRouter from "./routes/movieRouter";
 
 import morgan from "morgan";
-const app = express();
-// Use CORS middleware
-app.use(cors());
-const port = 3000;
-
+import path from "path";
+import { fileURLToPath } from "url";
 import { absolutePath } from "swagger-ui-dist";
 import ApiError from "./helpers/ApiError";
+
+const app = express();
+// Use CORS middleware
+app.use(cors({
+  origin: "*", // Genau das Frontend, das Zugriff benötigt
+}));
+
+
+
+const port = 3000;
 
 const pathToSwaggerUi = absolutePath();
 
@@ -36,16 +43,30 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 // Serve the Swagger UI at /docs
-
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(helmet());
 app.use(cookieParser());
 
+// Get the directory name in ES module scope
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve static files from the 'uploads' directory
+app.use("/uploads", (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // Erlaubt alle Domains (oder spezifische Frontend-Domain)
+  res.header("Cross-Origin-Resource-Policy", "cross-origin"); // Erlaubt Cross-Origin-Nutzung
+  next();
+}, express.static(path.join(__dirname, "../uploads")));
+
+
+
+
+
 app.use(express.static(pathToSwaggerUi));
 app.use("/user", userRouter);
-app.use("/", groupRouter);
+app.use("/groups", groupRouter); // Set /groups as the base URL for group routes
 app.use("/movie", movieRouter);
 
 // to handle requests to the endpoints that does not exist

@@ -1,36 +1,39 @@
-// import { Router } from "express";
-// import { getGroups, createGroup, deleteGroup, getGroup, joinGroup, addMemberToGroup, removeMemberFromGroup, addContentToGroup, getContentFromGroup } from "../controller/groupController";
-
-// const router = Router();
-
-// router.get("/groups", getGroups);
-// router.get("/groups/:id", getGroup);
-// router.get("/groups/:id/content", getContentFromGroup);
-// router.post("/groups/:id/join", joinGroup);
-// router.post("/groups/:id/members", addMemberToGroup);
-// router.post("/groups", createGroup);
-// router.delete("/groups/:id", deleteGroup);
-// router.delete("/groups/:id/members/:userId", removeMemberFromGroup);
-// router.post("/groups/:id/content", addContentToGroup);
-
-// export default router;
-
-
-// routes/groupRoutes.js
-import { Router } from "express";
-import { 
-  getGroups, 
-  createGroup, 
-  deleteGroup, 
-  getGroup, 
-  joinGroup, 
-  addMemberToGroup, 
-  removeMemberFromGroup, 
-  addContentToGroup, 
-  getContentFromGroup 
+import { Router, Request } from "express";
+import multer, { StorageEngine } from "multer";
+import crypto from "crypto";
+import path from "path";
+import {
+  getGroups,
+  createGroup,
+  deleteGroup,
+  getGroup,
+  joinGroup,
+  addMemberToGroup,
+  removeMemberFromGroup,
+  addContentToGroup,
+  getContentFromGroup,
+  getFeaturedGroups, getPopularGroups,
+  getYourGroups,
+  searchGroups
 } from "../controller/groupController";
 
 const router = Router();
+
+
+
+// Configure multer for file uploads
+const storage: StorageEngine = multer.diskStorage({
+  destination: (req: Request, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req: Request, file, cb) => {
+    const hash = crypto.createHash('md5').update(Date.now().toString()).digest('hex');
+    const ext = path.extname(file.originalname);
+    cb(null, `${hash}${ext}`);
+  }
+});
+
+const upload = multer({ storage });
 
 /**
  * @swagger
@@ -42,7 +45,81 @@ const router = Router();
  *       200:
  *         description: Successfully retrieved groups
  */
-router.get("/groups", getGroups);
+router.get("/", getGroups);
+
+/**
+ * @swagger
+ * /groups/featured:
+ *   post:
+ *     summary: Get featured groups
+ *     description: Retrieve a list of featured groups
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved featured groups
+ */
+router.post("/featured", getFeaturedGroups);
+
+/**
+ * @swagger
+ * /groups/popular:
+ *   post:
+ *     summary: Get popular groups
+ *     description: Retrieve a list of popular groups
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved popular groups
+ */
+router.post("/popular", getPopularGroups);
+
+/**
+ * @swagger
+ * /groups/yourGroups:
+ *   post:
+ *     summary: Get your groups
+ *     description: Retrieve a list of groups that the user is a member of
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: number
+ *                 description: The ID of the user
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved your groups
+ *       400:
+ *         description: userId is required
+ *       500:
+ *         description: Error fetching your groups
+ */
+router.post('/yourGroups', getYourGroups);
+
+/**
+ * @swagger
+ * /groups/search:
+ *   get:
+ *     summary: Search groups by name
+ *     description: Retrieve a list of groups that match the search query
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         required: true
+ *         description: The name of the group to search for
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved matching groups
+ *       400:
+ *         description: Name query parameter is required
+ *       500:
+ *         description: Error searching for groups
+ */
+router.get("/search", searchGroups);
 
 /**
  * @swagger
@@ -63,7 +140,7 @@ router.get("/groups", getGroups);
  *       404:
  *         description: Group not found
  */
-router.get("/groups/:id", getGroup);
+router.get("/:id", getGroup);
 
 /**
  * @swagger
@@ -84,7 +161,7 @@ router.get("/groups/:id", getGroup);
  *       404:
  *         description: Group or content not found
  */
-router.get("/groups/:id/content", getContentFromGroup);
+router.get("/:id/content", getContentFromGroup);
 
 /**
  * @swagger
@@ -105,7 +182,7 @@ router.get("/groups/:id/content", getContentFromGroup);
  *       404:
  *         description: Group not found
  */
-router.post("/groups/:id/join", joinGroup);
+router.post("/:id/join", joinGroup);
 
 /**
  * @swagger
@@ -126,7 +203,7 @@ router.post("/groups/:id/join", joinGroup);
  *       404:
  *         description: Group not found
  */
-router.post("/groups/:id/members", addMemberToGroup);
+router.post("/:id/members", addMemberToGroup);
 
 /**
  * @swagger
@@ -137,21 +214,36 @@ router.post("/groups/:id/members", addMemberToGroup);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
  *               name:
  *                 type: string
+ *                 description: The name of the group
+ *                 example: Example Group
+ *               ownersId:
+ *                 type: number
+ *                 description: The ID of the owner
+ *                 example: 9
+ *               category:
+ *                 type: string
+ *                 description: The category of the group
+ *                 example: Sports
  *               description:
  *                 type: string
+ *                 description: The description of the group
+ *                 example: This is an example group description.
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: Group successfully created
  *       400:
  *         description: Invalid input
  */
-router.post("/groups", createGroup);
+router.post("/", upload.single('image'), createGroup);
 
 /**
  * @swagger
@@ -172,7 +264,7 @@ router.post("/groups", createGroup);
  *       404:
  *         description: Group not found
  */
-router.delete("/groups/:id", deleteGroup);
+router.delete("/:id", deleteGroup);
 
 /**
  * @swagger
@@ -199,7 +291,7 @@ router.delete("/groups/:id", deleteGroup);
  *       404:
  *         description: Group or user not found
  */
-router.delete("/groups/:id/members/:userId", removeMemberFromGroup);
+router.delete("/:id/members/:userId", removeMemberFromGroup);
 
 /**
  * @swagger
@@ -229,6 +321,6 @@ router.delete("/groups/:id/members/:userId", removeMemberFromGroup);
  *       404:
  *         description: Group not found
  */
-router.post("/groups/:id/content", addContentToGroup);
+router.post("/:id/content", addContentToGroup);
 
 export default router;
