@@ -9,6 +9,7 @@ import swaggerUi from "swagger-ui-express";
 import userRouter from "./routes/userRouter";
 import groupRouter from "./routes/groupRouter";
 import movieRouter from "./routes/movieRouter";
+import favoriteRouter from "./routes/favoriteRouter";
 
 import morgan from "morgan";
 import path from "path";
@@ -71,7 +72,9 @@ app.use(
 app.use(express.static(pathToSwaggerUi));
 app.use("/user", userRouter);
 app.use("/groups", groupRouter); // Set /groups as the base URL for group routes
-app.use("/movie", authenticateJWT, movieRouter);
+app.use("/movie", movieRouter);
+// later make this route protected
+app.use("/favorites", authenticateJWT, favoriteRouter);
 
 // app.get("/me", authenticateJWT, (req, res) => {
 //   console.log("GET /me runs!");
