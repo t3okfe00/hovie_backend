@@ -43,6 +43,7 @@ export const signUp = async (
   next: NextFunction
 ): Promise<void> => {
   const { name, email, password } = req.body;
+  console.log("POST /signup", req.body);
   const temporaryProfileUrl = `/users/${uuidv4()}`;
   const userDataToDB = {
     name,
