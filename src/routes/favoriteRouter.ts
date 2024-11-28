@@ -45,7 +45,6 @@ router.delete("/", (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     next(error);
   }
-  res.send("Welcome to the favorites DELETE ROUTE!");
 });
 
 export default router;
