@@ -62,6 +62,7 @@ export const me = async (req: Request, res: Response, next: NextFunction) => {
       user: {
         email: req.user.email, // You can include more user fields here
         userId: req.user.userId,
+        name: req.user.name,
       },
     });
   }

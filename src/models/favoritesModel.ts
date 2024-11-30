@@ -7,9 +7,10 @@ import {
   timestamp,
   unique,
 } from "drizzle-orm/pg-core";
-import { sql, eq } from "drizzle-orm";
+import { sql, eq, desc } from "drizzle-orm";
 import { db } from "../db";
 import { users } from "./userModel";
+import { count } from "drizzle-orm";
 
 export const favorites = pgTable("favorites", {
   id: serial().primaryKey().notNull(),
@@ -43,15 +44,21 @@ export const saveFavorite = async (
 };
 
 // Function to get favorites for a specific user
-export const getFavoritesByUser = async (userId: number) => {
+export const getFavoritesByUser = async (
+  userId: number,
+  limit: number,
+  offset: number
+) => {
   try {
     // Use Drizzle ORM syntax to query the favorites table for the userId
     const userFavorites = await db
       .select()
       .from(favorites)
+      .limit(limit)
+      .offset(offset)
+      .orderBy(desc(favorites.addedAt))
       .where(eq(favorites.usersId, userId)); // Use eq() for filtering by usersId
 
-    console.log("User favorites:", userFavorites);
     return userFavorites; // Return the list of favorites
   } catch (error) {
     console.error("Error fetching user favorites:", error);
@@ -77,3 +84,20 @@ export const deleteFavoriteByUserAndMovie = async (
     throw new Error("Error deleting specific favorite");
   }
 };
+
+export async function getFavoritesCountByUserId(
+  userId: string
+): Promise<number> {
+  try {
+    const result = await db
+      .select({ count: count() })
+      .from(favorites)
+      .where(eq(favorites.usersId, userId))
+      .execute();
+
+    return result[0]?.count ?? 0;
+  } catch (error) {
+    console.error("Error fetching favorites count:", error);
+    throw error;
+  }
+}
