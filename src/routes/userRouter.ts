@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { logOutUser } from "../controller/userController";
+import { logOutUser, me } from "../controller/userController";
 import { signUp, loginUser } from "../controller/authController";
 import { validateSignUp } from "../controller/authController";
 import { deleteUser } from "../controller/userController";
@@ -109,5 +109,7 @@ router.delete("/delete", authenticateJWT, deleteUser);
  *         description: Successfully logged out
  */
 router.post("/logout", logOutUser);
+
+router.get("/me", authenticateJWT, me);
 
 export default router;

@@ -1,5 +1,6 @@
 import { getAllUsers, createUser, deleteUserById } from "../models/userModel";
 import { NextFunction, Request, Response } from "express-serve-static-core";
+
 import ApiError from "../helpers/ApiError";
 
 const getUsers = async (req: Request, res: Response, next: NextFunction) => {
@@ -39,11 +40,33 @@ export const logOutUser = async (
     next(new ApiError("User is already logged out", 400));
   }
 
-  res.cookie("jwt", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 1,
-  });
-  res.json({ message: "Logged Out" });
+  try {
+    // Clear the JWT cookie by setting its max-age to 0
+    res.cookie("jwt", "", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production", // Use secure flag in production
+      maxAge: 0, // Set maxAge to 0 to expire the cookie immediately
+    });
+
+    // Send a response indicating that the user has been logged out
+    res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
+    next(error); // Handle any errors
+  }
+};
+
+export const me = async (req: Request, res: Response, next: NextFunction) => {
+  if (req.user) {
+    return res.status(200).json({
+      user: {
+        email: req.user.email, // You can include more user fields here
+        userId: req.user.userId,
+        name: req.user.name,
+      },
+    });
+  }
+  console.log("No user found inside the ME ROUTE");
+  // In case the middleware allows the request but no user is found
+  return res.status(401).json({ message: "Unauthorized: User not found" });
 };
