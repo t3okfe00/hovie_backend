@@ -76,12 +76,6 @@ app.use("/movie", movieRouter);
 // later make this route protected
 app.use("/favorites", authenticateJWT, favoriteRouter);
 
-// app.get("/me", authenticateJWT, (req, res) => {
-//   console.log("GET /me runs!");
-//   const { userId, email } = req.user; // Decoded JWT payload
-//   res.json({ userId, email });
-// });
-
 // to handle requests to the endpoints that does not exist
 //important to place this after all routes since if this runs
 //it means there is no route matched and we return 404
