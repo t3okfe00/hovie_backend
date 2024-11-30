@@ -72,6 +72,13 @@ export type AddMemberInput = {
     role: string;
 }
 
+export type groupMember = {
+  id: number;
+  groupsId: number;
+  usersId: number;
+  role: string;
+}
+
 // Movie Type - Represents a movie object returned by TMDB API
 export type Movie = {
   id: number;

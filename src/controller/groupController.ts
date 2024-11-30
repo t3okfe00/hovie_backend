@@ -7,7 +7,10 @@ import {
     joinGroupById,
     acceptJoinRequest, removeMember, addContent, getContentFromModel,
     addMember,
-    removeMembersByGroupId, findFeaturedGroups, findPopularGroups, findYourGroups, findGroupsByName
+    removeMembersByGroupId, findFeaturedGroups, findPopularGroups, findYourGroups, findGroupsByName,
+    getMembersByGroupId,
+    checkGroupMember,
+    getJoinRequestsByGroupId
 } from "../models/groupModel";
 import {NextFunction} from "express";
 import ApiError from "../helpers/ApiError";
@@ -279,5 +282,66 @@ export const searchGroups = async (req: Request, res: Response, next: NextFuncti
         })));
     } catch (error) {
         next(new ApiError("Error searching for groups", 500));
+    }
+};
+
+export const getAllMembers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.body;
+
+        if (!id || !userId) {
+            next(new ApiError("id and userId are required", 400));
+            return;
+        }
+
+        const isMember = await checkGroupMember({ id: Number(id), userId: Number(userId) });
+        if (!isMember) {
+            next(new ApiError("You are not a member of this group", 403));
+            return;
+        }
+
+        const members = await getMembersByGroupId({ groupId: Number(id) });
+        if (!members) {
+            next(new ApiError("Group not found", 404));
+            return;
+        }
+
+        res.status(200).json(members);
+    } catch (error) {
+        next(new ApiError("Error fetching members", 500));
+    }
+};
+
+export const getAllJoinRequests = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.body;
+
+        if (!id || !userId) {
+            next(new ApiError("groupId and userId are required", 400));
+            return;
+        }
+
+        const group = await getGroupById({ id: Number(id) });
+        if (!group) {
+            next(new ApiError("Group not found", 404));
+            return;
+        }
+
+        if (group.ownersId !== Number(userId)) {
+            next(new ApiError("You are not the owner of this group", 403));
+            return;
+        }
+
+        const requests = await getJoinRequestsByGroupId(Number(id));
+        if (!requests.length) {
+            next(new ApiError("No join requests found for this group", 404));
+            return;
+        }
+
+        res.status(200).json(requests);
+    } catch (error) {
+        next(new ApiError("Error fetching join requests", 500));
     }
 };

@@ -14,7 +14,8 @@ import {
   getContentFromGroup,
   getFeaturedGroups, getPopularGroups,
   getYourGroups,
-  searchGroups
+  searchGroups,
+  getAllMembers, getAllJoinRequests
 } from "../controller/groupController";
 
 const router = Router();
@@ -187,6 +188,29 @@ router.post("/:id/join", joinGroup);
 /**
  * @swagger
  * /groups/{id}/members:
+ *   get:
+ *     summary: Get all members of a group
+ *     description: Retrieve a list of all members of a specific group by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the group
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved members
+ *       404:
+ *         description: Group not found
+ *       500:
+ *         description: Error fetching members
+ */
+router.post("/:id/members", getAllMembers);
+
+/**
+ * @swagger
+ * /groups/{id}/members:
  *   post:
  *     summary: Add a member to a group
  *     description: Add a new member to a specific group by ID
@@ -322,5 +346,28 @@ router.delete("/:id/members/:userId", removeMemberFromGroup);
  *         description: Group not found
  */
 router.post("/:id/content", addContentToGroup);
+
+/**
+ * @swagger
+ * /groups/{groupId}/joinrequests:
+ *   get:
+ *     summary: Get all join requests for a group
+ *     description: Retrieve a list of all join requests for a specific group by ID
+ *     parameters:
+ *       - in: path
+ *         name: groupId
+ *         required: true
+ *         description: The ID of the group
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved join requests
+ *       404:
+ *         description: No join requests found for this group
+ *       500:
+ *         description: Error fetching join requests
+ */
+router.post("/:id/joinrequests", getAllJoinRequests);
 
 export default router;
