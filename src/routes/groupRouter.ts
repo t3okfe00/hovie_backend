@@ -14,7 +14,9 @@ import {
   getContentFromGroup,
   getFeaturedGroups, getPopularGroups,
   getYourGroups,
-  searchGroups
+  searchGroups,
+  getAllMembers, getAllJoinRequests,
+  declineJoinRequest
 } from "../controller/groupController";
 
 const router = Router();
@@ -145,6 +147,36 @@ router.get("/:id", getGroup);
 /**
  * @swagger
  * /groups/{id}/content:
+ *   post:
+ *     summary: Add content to a group
+ *     description: Add new content to a specific group by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the group
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Content successfully added to the group
+ *       404:
+ *         description: Group not found
+ */
+router.post("/:id/content", addContentToGroup);
+
+/**
+ * @swagger
+ * /groups/{id}/content:
  *   get:
  *     summary: Get content from a group
  *     description: Retrieve content from a specific group by ID
@@ -161,7 +193,7 @@ router.get("/:id", getGroup);
  *       404:
  *         description: Group or content not found
  */
-router.get("/:id/content", getContentFromGroup);
+router.post("/:id/contents", getContentFromGroup);
 
 /**
  * @swagger
@@ -187,6 +219,29 @@ router.post("/:id/join", joinGroup);
 /**
  * @swagger
  * /groups/{id}/members:
+ *   get:
+ *     summary: Get all members of a group
+ *     description: Retrieve a list of all members of a specific group by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the group
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved members
+ *       404:
+ *         description: Group not found
+ *       500:
+ *         description: Error fetching members
+ */
+router.post("/:id/members", getAllMembers);
+
+/**
+ * @swagger
+ * /groups/{id}/members:
  *   post:
  *     summary: Add a member to a group
  *     description: Add a new member to a specific group by ID
@@ -203,7 +258,48 @@ router.post("/:id/join", joinGroup);
  *       404:
  *         description: Group not found
  */
-router.post("/:id/members", addMemberToGroup);
+router.post("/:id/addmembers", addMemberToGroup);
+
+/**
+ * @swagger
+ * /groups/{id}/declineJoinRequest:
+ *   post:
+ *     summary: Decline a join request for a group
+ *     tags: [Groups]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: The group ID
+ *       - in: body
+ *         name: body
+ *         required: true
+ *         description: The user ID and owner ID
+ *         schema:
+ *           type: object
+ *           required:
+ *             - userId
+ *             - ownerId
+ *           properties:
+ *             userId:
+ *               type: integer
+ *               description: The ID of the user whose join request is being declined
+ *             ownerId:
+ *               type: integer
+ *               description: The ID of the owner of the group
+ *     responses:
+ *       200:
+ *         description: Join request declined successfully
+ *       400:
+ *         description: id, userId, and ownerId are required
+ *       404:
+ *         description: Group not found or you are not the owner, or join request not found or already processed
+ *       500:
+ *         description: Error declining join request
+ */
+router.post('/:id/declineJoinRequest', declineJoinRequest);
 
 /**
  * @swagger
@@ -293,34 +389,29 @@ router.delete("/:id", deleteGroup);
  */
 router.delete("/:id/members/:userId", removeMemberFromGroup);
 
+
+
 /**
  * @swagger
- * /groups/{id}/content:
- *   post:
- *     summary: Add content to a group
- *     description: Add new content to a specific group by ID
+ * /groups/{groupId}/joinrequests:
+ *   get:
+ *     summary: Get all join requests for a group
+ *     description: Retrieve a list of all join requests for a specific group by ID
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: groupId
  *         required: true
  *         description: The ID of the group
  *         schema:
  *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               content:
- *                 type: string
  *     responses:
- *       201:
- *         description: Content successfully added to the group
+ *       200:
+ *         description: Successfully retrieved join requests
  *       404:
- *         description: Group not found
+ *         description: No join requests found for this group
+ *       500:
+ *         description: Error fetching join requests
  */
-router.post("/:id/content", addContentToGroup);
+router.post("/:id/joinrequests", getAllJoinRequests);
 
 export default router;

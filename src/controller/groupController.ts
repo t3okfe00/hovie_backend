@@ -7,7 +7,11 @@ import {
     joinGroupById,
     acceptJoinRequest, removeMember, addContent, getContentFromModel,
     addMember,
-    removeMembersByGroupId, findFeaturedGroups, findPopularGroups, findYourGroups, findGroupsByName
+    removeMembersByGroupId, findFeaturedGroups, findPopularGroups, findYourGroups, findGroupsByName,
+    getMembersByGroupId,
+    checkGroupMember,
+    getJoinRequestsByGroupId,
+    declineJoinRequestById
 } from "../models/groupModel";
 import {NextFunction} from "express";
 import ApiError from "../helpers/ApiError";
@@ -153,6 +157,30 @@ export const addMemberToGroup = async (req: Request, res: Response, next: NextFu
     }
 };
 
+export const declineJoinRequest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { userId, ownerId } = req.body;
+        if (!id || !userId || !ownerId) {
+            next(new ApiError("id, userId, and ownerId are required", 400));
+            return;
+        }
+        const group = await getGroupById({ id: Number(id) });
+        if (!group || group.ownersId !== Number(ownerId)) {
+            next(new ApiError("Group not found or you are not the owner", 404));
+            return;
+        }
+        const declined = await declineJoinRequestById(Number(id), Number(userId));
+        if (!declined) {
+            next(new ApiError("Join request not found or already processed", 404));
+            return;
+        }
+        res.status(200).json({ message: "Join request declined successfully" });
+    } catch (error) {
+        next(new ApiError("Error declining join request", 500));
+    }
+};
+
 export const removeMemberFromGroup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id, userId } = req.params;
@@ -175,12 +203,17 @@ export const removeMemberFromGroup = async (req: Request, res: Response, next: N
 export const addContentToGroup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
-        const { userId, content } = req.body;
+        const { userId, content, message } = req.body;
         if (!id || !userId || !content) {
             next(new ApiError("id, userId, and content are required", 400));
             return;
         }
-        const added = await addContent({addedByUserId: Number(userId), movieId: Number(content), groupsId: Number(id)});
+        const added = await addContent({
+            addedByUserId: Number(userId),
+            movieId: Number(content),
+            groupsId: Number(id),
+            message: String(message)
+        });
         if (!added) {
             next(new ApiError("Group not found or you are not a member", 404));
             return;
@@ -279,5 +312,66 @@ export const searchGroups = async (req: Request, res: Response, next: NextFuncti
         })));
     } catch (error) {
         next(new ApiError("Error searching for groups", 500));
+    }
+};
+
+export const getAllMembers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.body;
+
+        if (!id || !userId) {
+            next(new ApiError("id and userId are required", 400));
+            return;
+        }
+
+        const isMember = await checkGroupMember({ id: Number(id), userId: Number(userId) });
+        if (!isMember) {
+            next(new ApiError("You are not a member of this group", 403));
+            return;
+        }
+
+        const members = await getMembersByGroupId({ groupId: Number(id) });
+        if (!members) {
+            next(new ApiError("Group not found", 404));
+            return;
+        }
+
+        res.status(200).json(members);
+    } catch (error) {
+        next(new ApiError("Error fetching members", 500));
+    }
+};
+
+export const getAllJoinRequests = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.body;
+
+        if (!id || !userId) {
+            next(new ApiError("groupId and userId are required", 400));
+            return;
+        }
+
+        const group = await getGroupById({ id: Number(id) });
+        if (!group) {
+            next(new ApiError("Group not found", 404));
+            return;
+        }
+
+        if (group.ownersId !== Number(userId)) {
+            next(new ApiError("You are not the owner of this group", 403));
+            return;
+        }
+
+        const requests = await getJoinRequestsByGroupId(Number(id));
+        if (!requests.length) {
+            next(new ApiError("No join requests found for this group", 404));
+            return;
+        }
+
+        res.status(200).json(requests);
+    } catch (error) {
+        next(new ApiError("Error fetching join requests", 500));
     }
 };

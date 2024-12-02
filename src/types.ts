@@ -58,6 +58,7 @@ export type CreateGroupContentInput = {
   addedByUserId: number;
   groupsId: number;
   movieId: number;
+  message: string;
 }
 
 export type JoinGroupInput = {
@@ -70,6 +71,13 @@ export type AddMemberInput = {
     groupId: number;
     userId: number;
     role: string;
+}
+
+export type groupMember = {
+  id: number;
+  groupsId: number;
+  usersId: number;
+  role: string;
 }
 
 // Movie Type - Represents a movie object returned by TMDB API

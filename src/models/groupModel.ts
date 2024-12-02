@@ -2,12 +2,12 @@ import {foreignKey, integer, pgTable, serial, varchar,} from "drizzle-orm/pg-cor
 import {and, eq, sql} from "drizzle-orm";
 import {db} from "../db";
 import {users} from "./userModel";
-import {groupcontent, groupmembers} from "../db/schema";
+import {groupcontent} from "../db/schema";
 import {
     AddMemberInput,
     CreateGroupContentInput,
     CreateGroupInput,
-    Group,
+    Group, groupMember,
     IdGroupInput,
     JoinGroupInput,
     RemoveMemberInput,
@@ -47,6 +47,26 @@ export const joinrequests = pgTable("joinrequests", {
             columns: [table.usersId],
             foreignColumns: [users.id],
             name: "joinrequests_users_id_fkey"
+        }),
+    }
+});
+
+export const groupmembers = pgTable("groupmembers", {
+    id: serial().primaryKey().notNull(),
+    usersId: integer("users_id").notNull(),
+    groupsId: integer("groups_id").notNull(),
+    role: varchar({ length: 45 }).notNull()
+}, (table) => {
+    return {
+        groupmembersUsersIdFkey: foreignKey({
+            columns: [table.usersId],
+            foreignColumns: [users.id],
+            name: "groupmembers_users_id_fkey"
+        }),
+        groupmembersGroupsIdFkey: foreignKey({
+            columns: [table.groupsId],
+            foreignColumns: [groups.id],
+            name: "groupmembers_groups_id_fkey"
         }),
     }
 });
@@ -106,7 +126,19 @@ export const acceptJoinRequest = async (groupData: JoinGroupInput): Promise<bool
     await db.update(joinrequests)
         .set({ status: 'accepted' })
         .where(eq(joinrequests.id, request.id));
-    await db.insert(groupmembers).values({ groupsId: groupData.id, usersId: groupData.userId });
+    await db.insert(groupmembers).values({ groupsId: groupData.id, usersId: groupData.userId, role: 'member' });
+    return true;
+};
+
+export const declineJoinRequestById = async (groupId: number, userId: number): Promise<boolean> => {
+    const [request] = await db.select().from(joinrequests)
+        .where(and(eq(joinrequests.groupsId, groupId), eq(joinrequests.usersId, userId), eq(joinrequests.status, 'pending')));
+    if (!request) {
+        return false;
+    }
+    await db.update(joinrequests)
+        .set({ status: 'declined' })
+        .where(eq(joinrequests.id, request.id));
     return true;
 };
 
@@ -133,7 +165,12 @@ export const addContent = async (groupData: CreateGroupContentInput): Promise<bo
     if (!await isGroupMember({ id: groupData.groupsId, userId: groupData.addedByUserId })) {
         return false;
     }
-    await db.insert(groupcontent).values({ groupsId: groupData.groupsId, addedByUserId: groupData.addedByUserId, movieId: groupData.movieId });
+    await db.insert(groupcontent).values({
+        groupsId: groupData.groupsId,
+        addedByUserId: groupData.addedByUserId,
+        movieId: groupData.movieId,
+        message: groupData.message // Corrected property name
+    });
     return true;
 };
 
@@ -141,7 +178,13 @@ export const getContentFromModel = async (groupData: UidIdGroupInput) => {
     if (!await isGroupMember({ id: groupData.id, userId: groupData.userId })) {
         return false;
     }
-    const [content] = await db.select().from(groupcontent).where(eq(groupcontent.groupsId, groupData.id));
+    const content = await db.select({
+        content: groupcontent,
+        userName: users.name
+    })
+        .from(groupcontent)
+        .leftJoin(users, eq(groupcontent.addedByUserId, users.id))
+        .where(eq(groupcontent.groupsId, groupData.id));
     return content;
 };
 
@@ -222,4 +265,37 @@ export const findGroupsByName = async (name: string) => {
         })
         .from(groups)
         .where(sql`${groups.name} ILIKE ${'%' + name + '%'}`);
+};
+
+export const getMembersByGroupId = async ({ groupId }: { groupId: number }): Promise<groupMember[]> => {
+    const members = await db.select({
+        id: groupmembers.id,
+        groupsId: groupmembers.groupsId,
+        usersId: groupmembers.usersId,
+        role: groupmembers.role,
+        userName: users.name
+    }).from(groupmembers)
+        .leftJoin(users, eq(groupmembers.usersId, users.id))
+        .where(eq(groupmembers.groupsId, groupId));
+    return members;
+};
+
+export const checkGroupMember = async (groupData: { id: number, userId: number }): Promise<boolean> => {
+    const [member] = await db.select().from(groupmembers)
+        .where(and(eq(groupmembers.groupsId, groupData.id), eq(groupmembers.usersId, groupData.userId)));
+    return !!member;
+};
+
+export const getJoinRequestsByGroupId = async (groupId: number) => {
+    return await db
+        .select({
+            id: joinrequests.id,
+            status: joinrequests.status,
+            usersId: joinrequests.usersId,
+            groupsId: joinrequests.groupsId,
+            userName: users.name
+        })
+        .from(joinrequests)
+        .leftJoin(users, eq(joinrequests.usersId, users.id))
+        .where(eq(joinrequests.groupsId, groupId));
 };
