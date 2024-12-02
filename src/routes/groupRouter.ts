@@ -147,6 +147,36 @@ router.get("/:id", getGroup);
 /**
  * @swagger
  * /groups/{id}/content:
+ *   post:
+ *     summary: Add content to a group
+ *     description: Add new content to a specific group by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the group
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Content successfully added to the group
+ *       404:
+ *         description: Group not found
+ */
+router.post("/:id/content", addContentToGroup);
+
+/**
+ * @swagger
+ * /groups/{id}/content:
  *   get:
  *     summary: Get content from a group
  *     description: Retrieve content from a specific group by ID
@@ -163,7 +193,7 @@ router.get("/:id", getGroup);
  *       404:
  *         description: Group or content not found
  */
-router.get("/:id/content", getContentFromGroup);
+router.post("/:id/contents", getContentFromGroup);
 
 /**
  * @swagger
@@ -359,35 +389,7 @@ router.delete("/:id", deleteGroup);
  */
 router.delete("/:id/members/:userId", removeMemberFromGroup);
 
-/**
- * @swagger
- * /groups/{id}/content:
- *   post:
- *     summary: Add content to a group
- *     description: Add new content to a specific group by ID
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: The ID of the group
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               content:
- *                 type: string
- *     responses:
- *       201:
- *         description: Content successfully added to the group
- *       404:
- *         description: Group not found
- */
-router.post("/:id/content", addContentToGroup);
+
 
 /**
  * @swagger

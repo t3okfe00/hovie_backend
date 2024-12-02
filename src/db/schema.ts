@@ -102,6 +102,7 @@ export const groupcontent = pgTable(
     addedByUserId: integer("added_by_user_id"),
     groupsId: integer("groups_id").notNull(),
     movieId: integer("movie_id").notNull(),
+    message: varchar({ length: 255 }),
   },
   (table) => {
     return {

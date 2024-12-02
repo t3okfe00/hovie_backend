@@ -203,12 +203,17 @@ export const removeMemberFromGroup = async (req: Request, res: Response, next: N
 export const addContentToGroup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { id } = req.params;
-        const { userId, content } = req.body;
+        const { userId, content, message } = req.body;
         if (!id || !userId || !content) {
             next(new ApiError("id, userId, and content are required", 400));
             return;
         }
-        const added = await addContent({addedByUserId: Number(userId), movieId: Number(content), groupsId: Number(id)});
+        const added = await addContent({
+            addedByUserId: Number(userId),
+            movieId: Number(content),
+            groupsId: Number(id),
+            message: String(message)
+        });
         if (!added) {
             next(new ApiError("Group not found or you are not a member", 404));
             return;

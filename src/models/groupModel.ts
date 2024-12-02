@@ -165,7 +165,12 @@ export const addContent = async (groupData: CreateGroupContentInput): Promise<bo
     if (!await isGroupMember({ id: groupData.groupsId, userId: groupData.addedByUserId })) {
         return false;
     }
-    await db.insert(groupcontent).values({ groupsId: groupData.groupsId, addedByUserId: groupData.addedByUserId, movieId: groupData.movieId });
+    await db.insert(groupcontent).values({
+        groupsId: groupData.groupsId,
+        addedByUserId: groupData.addedByUserId,
+        movieId: groupData.movieId,
+        message: groupData.message // Corrected property name
+    });
     return true;
 };
 
@@ -173,7 +178,13 @@ export const getContentFromModel = async (groupData: UidIdGroupInput) => {
     if (!await isGroupMember({ id: groupData.id, userId: groupData.userId })) {
         return false;
     }
-    const [content] = await db.select().from(groupcontent).where(eq(groupcontent.groupsId, groupData.id));
+    const content = await db.select({
+        content: groupcontent,
+        userName: users.name
+    })
+        .from(groupcontent)
+        .leftJoin(users, eq(groupcontent.addedByUserId, users.id))
+        .where(eq(groupcontent.groupsId, groupData.id));
     return content;
 };
 

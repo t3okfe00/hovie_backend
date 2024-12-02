@@ -58,6 +58,7 @@ export type CreateGroupContentInput = {
   addedByUserId: number;
   groupsId: number;
   movieId: number;
+  message: string;
 }
 
 export type JoinGroupInput = {
