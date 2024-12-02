@@ -17,6 +17,7 @@ import { fileURLToPath } from "url";
 import { absolutePath } from "swagger-ui-dist";
 import ApiError from "./helpers/ApiError";
 import { authenticateJWT } from "./middleware/authenticateJWT";
+import { configureSwagger } from "./routes/ConfigureSwagger";
 
 const app = express();
 // Use CORS middleware
@@ -45,10 +46,13 @@ const swaggerOptions = {
   apis: ["./routes/*.ts"], // Path to your route files
 };
 
-const swaggerSpec = swaggerJSDoc(swaggerOptions);
+const swaggerSpec = configureSwagger();
+// const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 // Serve the Swagger UI at /docs
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/swagger-json", (req, res) => res.json(swaggerSpec));
+
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(helmet());
