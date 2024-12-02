@@ -130,6 +130,18 @@ export const acceptJoinRequest = async (groupData: JoinGroupInput): Promise<bool
     return true;
 };
 
+export const declineJoinRequestById = async (groupId: number, userId: number): Promise<boolean> => {
+    const [request] = await db.select().from(joinrequests)
+        .where(and(eq(joinrequests.groupsId, groupId), eq(joinrequests.usersId, userId), eq(joinrequests.status, 'pending')));
+    if (!request) {
+        return false;
+    }
+    await db.update(joinrequests)
+        .set({ status: 'declined' })
+        .where(eq(joinrequests.id, request.id));
+    return true;
+};
+
 export const removeMember = async (groupData: RemoveMemberInput): Promise<boolean> => {
     const [group] = await db.select().from(groups).where(eq(groups.id, groupData.id));
     if (!group) {
@@ -249,8 +261,11 @@ export const getMembersByGroupId = async ({ groupId }: { groupId: number }): Pro
         id: groupmembers.id,
         groupsId: groupmembers.groupsId,
         usersId: groupmembers.usersId,
-        role: groupmembers.role
-    }).from(groupmembers).where(eq(groupmembers.groupsId, groupId));
+        role: groupmembers.role,
+        userName: users.name
+    }).from(groupmembers)
+        .leftJoin(users, eq(groupmembers.usersId, users.id))
+        .where(eq(groupmembers.groupsId, groupId));
     return members;
 };
 
@@ -261,5 +276,15 @@ export const checkGroupMember = async (groupData: { id: number, userId: number }
 };
 
 export const getJoinRequestsByGroupId = async (groupId: number) => {
-    return await db.select().from(joinrequests).where(eq(joinrequests.groupsId, groupId));
+    return await db
+        .select({
+            id: joinrequests.id,
+            status: joinrequests.status,
+            usersId: joinrequests.usersId,
+            groupsId: joinrequests.groupsId,
+            userName: users.name
+        })
+        .from(joinrequests)
+        .leftJoin(users, eq(joinrequests.usersId, users.id))
+        .where(eq(joinrequests.groupsId, groupId));
 };

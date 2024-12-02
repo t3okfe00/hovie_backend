@@ -10,7 +10,8 @@ import {
     removeMembersByGroupId, findFeaturedGroups, findPopularGroups, findYourGroups, findGroupsByName,
     getMembersByGroupId,
     checkGroupMember,
-    getJoinRequestsByGroupId
+    getJoinRequestsByGroupId,
+    declineJoinRequestById
 } from "../models/groupModel";
 import {NextFunction} from "express";
 import ApiError from "../helpers/ApiError";
@@ -153,6 +154,30 @@ export const addMemberToGroup = async (req: Request, res: Response, next: NextFu
         res.status(200).json({ message: "Member added to group successfully" });
     } catch (error) {
         next(new ApiError("Error adding member to group", 500));
+    }
+};
+
+export const declineJoinRequest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const { userId, ownerId } = req.body;
+        if (!id || !userId || !ownerId) {
+            next(new ApiError("id, userId, and ownerId are required", 400));
+            return;
+        }
+        const group = await getGroupById({ id: Number(id) });
+        if (!group || group.ownersId !== Number(ownerId)) {
+            next(new ApiError("Group not found or you are not the owner", 404));
+            return;
+        }
+        const declined = await declineJoinRequestById(Number(id), Number(userId));
+        if (!declined) {
+            next(new ApiError("Join request not found or already processed", 404));
+            return;
+        }
+        res.status(200).json({ message: "Join request declined successfully" });
+    } catch (error) {
+        next(new ApiError("Error declining join request", 500));
     }
 };
 

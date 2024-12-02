@@ -15,7 +15,8 @@ import {
   getFeaturedGroups, getPopularGroups,
   getYourGroups,
   searchGroups,
-  getAllMembers, getAllJoinRequests
+  getAllMembers, getAllJoinRequests,
+  declineJoinRequest
 } from "../controller/groupController";
 
 const router = Router();
@@ -227,7 +228,48 @@ router.post("/:id/members", getAllMembers);
  *       404:
  *         description: Group not found
  */
-router.post("/:id/members", addMemberToGroup);
+router.post("/:id/addmembers", addMemberToGroup);
+
+/**
+ * @swagger
+ * /groups/{id}/declineJoinRequest:
+ *   post:
+ *     summary: Decline a join request for a group
+ *     tags: [Groups]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: The group ID
+ *       - in: body
+ *         name: body
+ *         required: true
+ *         description: The user ID and owner ID
+ *         schema:
+ *           type: object
+ *           required:
+ *             - userId
+ *             - ownerId
+ *           properties:
+ *             userId:
+ *               type: integer
+ *               description: The ID of the user whose join request is being declined
+ *             ownerId:
+ *               type: integer
+ *               description: The ID of the owner of the group
+ *     responses:
+ *       200:
+ *         description: Join request declined successfully
+ *       400:
+ *         description: id, userId, and ownerId are required
+ *       404:
+ *         description: Group not found or you are not the owner, or join request not found or already processed
+ *       500:
+ *         description: Error declining join request
+ */
+router.post('/:id/declineJoinRequest', declineJoinRequest);
 
 /**
  * @swagger
