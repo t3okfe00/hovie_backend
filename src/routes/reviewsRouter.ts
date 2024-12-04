@@ -12,6 +12,7 @@ router.post("/:id", authenticateJWT, async (req, res) => {
   const { comment, rating, finnId } = req.body;
   const movieId = req.params.id;
   const { userId } = req.user;
+  console.log(req.user);
 
   try {
     const result = await createReview(movieId, userId, rating, comment, finnId);

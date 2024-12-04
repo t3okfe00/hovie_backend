@@ -31,7 +31,7 @@ export const createReview = async (
   usersId: number,
   rating: number,
   description: string,
-  finnId?: number
+  finnId?: string
 ) => {
   try {
     const result = await db
@@ -41,7 +41,7 @@ export const createReview = async (
         usersId,
         rating,
         description,
-        finnId: 0,
+        finnId,
       })
       .returning();
     console.log("Review created successfully!");

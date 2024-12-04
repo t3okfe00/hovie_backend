@@ -37,6 +37,7 @@ export const reviews = pgTable("reviews", {
   usersId: integer("users_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+  userName: varchar("user_name", { length: 255 }), // New column for user name
   rating: integer(),
   description: varchar({ length: 500 }),
   createdAt: timestamp("created_at", { mode: "string" }).default(
@@ -52,8 +53,8 @@ export const groups = pgTable("groups", {
   name: varchar({ length: 45 }).notNull(),
   description: varchar({ length: 255 }),
   ownersId: integer("owners_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
 });
 
 // `favorites` table with cascading behavior for both delete and update
