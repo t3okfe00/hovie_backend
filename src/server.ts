@@ -10,6 +10,7 @@ import userRouter from "./routes/userRouter";
 import groupRouter from "./routes/groupRouter";
 import movieRouter from "./routes/movieRouter";
 import favoriteRouter from "./routes/favoriteRouter";
+import reviewRouter from "./routes/reviewsRouter";
 
 import morgan from "morgan";
 import path from "path";
@@ -79,6 +80,7 @@ app.use("/groups", groupRouter); // Set /groups as the base URL for group routes
 app.use("/movie", movieRouter);
 // later make this route protected
 app.use("/favorites", authenticateJWT, favoriteRouter);
+app.use("/reviews", reviewRouter);
 
 // to handle requests to the endpoints that does not exist
 //important to place this after all routes since if this runs

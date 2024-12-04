@@ -36,13 +36,10 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
     console.log("Total Pages:", totalPages);
 
     console.log("Favorites:", favorites);
-    res
-      .status(200)
-      .json({
-        message: "Favorites fetched successfully",
-        favorites,
-        totalPages,
-      });
+    res.status(200).json({
+      favorites,
+      totalPages,
+    });
   } catch (error) {
     next(error);
   }
