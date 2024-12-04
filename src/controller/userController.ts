@@ -21,6 +21,12 @@ export const deleteUser = async (
 
   try {
     await deleteUserById(userId);
+    res.cookie("jwt", "", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production", // Use secure flag in production
+      maxAge: 0, // Set maxAge to 0 to expire the cookie immediately
+    });
     res.status(204).json({ message: "User deleted" });
   } catch (error) {
     next(new ApiError("User could not be deleted", 500));
