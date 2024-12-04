@@ -16,6 +16,8 @@ export const reviews = pgTable("reviews", {
   usersId: integer("users_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade", onUpdate: "cascade" }),
+  userName: varchar("user_name", { length: 255 }), // New column for user name
+
   rating: integer(),
   description: varchar({ length: 500 }),
   createdAt: timestamp("created_at", { mode: "string" }).default(
@@ -31,7 +33,8 @@ export const createReview = async (
   usersId: number,
   rating: number,
   description: string,
-  finnId?: string
+  finnId?: string,
+  userName?: string
 ) => {
   try {
     const result = await db
@@ -42,6 +45,7 @@ export const createReview = async (
         rating,
         description,
         finnId,
+        userName,
       })
       .returning();
     console.log("Review created successfully!");

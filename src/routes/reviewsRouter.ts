@@ -11,11 +11,18 @@ router.get("/", (req, res) => {
 router.post("/:id", authenticateJWT, async (req, res) => {
   const { comment, rating, finnId } = req.body;
   const movieId = req.params.id;
-  const { userId } = req.user;
-  console.log(req.user);
+  const { userId, name } = req.user;
+  console.log("NAME : ", name);
 
   try {
-    const result = await createReview(movieId, userId, rating, comment, finnId);
+    const result = await createReview(
+      movieId,
+      userId,
+      rating,
+      comment,
+      finnId,
+      name
+    );
     res.json({ message: "Review submitted successfully", result });
   } catch (error) {
     res.status(500).json({ error: error.message });
