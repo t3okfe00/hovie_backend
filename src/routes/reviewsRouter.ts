@@ -1,6 +1,7 @@
 import { getReviewsByMovie, createReview } from "./../models/reviewModel";
 import { authenticateJWT } from "../middleware/authenticateJWT";
 import { Router } from "express";
+import { deleteReview } from "../models/reviewModel";
 
 const router = Router();
 
@@ -29,6 +30,15 @@ router.post("/:id", authenticateJWT, async (req, res) => {
   }
 });
 
+router.delete("/:id", authenticateJWT, async (req, res) => {
+  try {
+    const result = await deleteReview(Number(req.params.id));
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.get("/:id", async (req, res) => {
   console.log("Fetching reviews of movie with ID", req.params.id);
   const { page = 1, limit = 3 } = req.query;
@@ -47,7 +57,7 @@ router.get("/:id", async (req, res) => {
 
   try {
     const reviews = await getReviewsByMovie(Number(req.params.id), 10, 0);
-    res.json(reviews);
+    res.status(200).json(reviews);
   } catch (error) {}
 });
 
