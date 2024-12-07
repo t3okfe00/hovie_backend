@@ -196,7 +196,7 @@ export const removeMembersByGroupId = async ({ groupId }: { groupId: number }): 
     await db.delete(groupmembers).where(eq(groupmembers.groupsId, groupId));
 };
 
-export const findFeaturedGroups = async (userId: number) => {
+export const findFeaturedGroups = async () => {
     return await db
         .select({
             id: groups.id,
@@ -209,13 +209,12 @@ export const findFeaturedGroups = async (userId: number) => {
         })
         .from(groups)
         .leftJoin(groupmembers, sql`${groups}.id = ${groupmembers}.groups_id`)
-        .where(sql`${groupmembers}.users_id != ${userId} OR ${groupmembers}.role != 'owner'`)
         .groupBy(groups.id)
         .orderBy(sql`RANDOM()`)
         .limit(4);
 };
 
-export const findPopularGroups = async (userId: number) => {
+export const findPopularGroups = async () => {
     return await db
         .select({
             id: groups.id,
@@ -228,7 +227,6 @@ export const findPopularGroups = async (userId: number) => {
         })
         .from(groups)
         .leftJoin(groupmembers, sql`${groups}.id = ${groupmembers}.groups_id`)
-        .where(sql`${groupmembers}.users_id != ${userId} OR ${groupmembers}.role != 'owner'`)
         .groupBy(groups.id)
         .orderBy(sql`COUNT(${groupmembers}.id) DESC`)
         .limit(4);

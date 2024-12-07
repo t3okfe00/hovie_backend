@@ -245,13 +245,7 @@ export const getContentFromGroup = async (req: Request, res: Response, next: Nex
 
 export const getFeaturedGroups = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { userId } = req.body;
-        if (!userId) {
-            next(new ApiError("userId is required", 400));
-            return;
-        }
-
-        const groups = await findFeaturedGroups(userId);
+        const groups = await findFeaturedGroups();
         res.json(groups.map(group => ({
             ...group,
             pictureUrl: group.pictureUrl
@@ -263,13 +257,7 @@ export const getFeaturedGroups = async (req: Request, res: Response, next: NextF
 
 export const getPopularGroups = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { userId } = req.body;
-        if (!userId) {
-            next(new ApiError("userId is required", 400));
-            return;
-        }
-
-        const groups = await findPopularGroups(userId);
+        const groups = await findPopularGroups();
         res.json(groups.map(group => ({
             ...group,
             pictureUrl: group.pictureUrl
@@ -365,11 +353,6 @@ export const getAllJoinRequests = async (req: Request, res: Response, next: Next
         }
 
         const requests = await getJoinRequestsByGroupId(Number(id));
-        if (!requests.length) {
-            next(new ApiError("No join requests found for this group", 404));
-            return;
-        }
-
         res.status(200).json(requests);
     } catch (error) {
         next(new ApiError("Error fetching join requests", 500));
