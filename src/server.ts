@@ -10,6 +10,7 @@ import userRouter from "./routes/userRouter";
 import groupRouter from "./routes/groupRouter";
 import movieRouter from "./routes/movieRouter";
 import favoriteRouter from "./routes/favoriteRouter";
+import reviewRouter from "./routes/reviewsRouter";
 
 import morgan from "morgan";
 import path from "path";
@@ -17,6 +18,7 @@ import { fileURLToPath } from "url";
 import { absolutePath } from "swagger-ui-dist";
 import ApiError from "./helpers/ApiError";
 import { authenticateJWT } from "./middleware/authenticateJWT";
+import { configureSwagger } from "./routes/ConfigureSwagger";
 
 const app = express();
 // Use CORS middleware
@@ -45,10 +47,13 @@ const swaggerOptions = {
   apis: ["./routes/*.ts"], // Path to your route files
 };
 
-const swaggerSpec = swaggerJSDoc(swaggerOptions);
+const swaggerSpec = configureSwagger();
+// const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 // Serve the Swagger UI at /docs
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/swagger-json", (req, res) => res.json(swaggerSpec));
+
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(helmet());
@@ -75,12 +80,7 @@ app.use("/groups", groupRouter); // Set /groups as the base URL for group routes
 app.use("/movie", movieRouter);
 // later make this route protected
 app.use("/favorites", authenticateJWT, favoriteRouter);
-
-// app.get("/me", authenticateJWT, (req, res) => {
-//   console.log("GET /me runs!");
-//   const { userId, email } = req.user; // Decoded JWT payload
-//   res.json({ userId, email });
-// });
+app.use("/reviews", reviewRouter);
 
 // to handle requests to the endpoints that does not exist
 //important to place this after all routes since if this runs

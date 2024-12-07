@@ -12,27 +12,30 @@ import {
   removeMemberFromGroup,
   addContentToGroup,
   getContentFromGroup,
-  getFeaturedGroups, getPopularGroups,
+  getFeaturedGroups,
+  getPopularGroups,
   getYourGroups,
   searchGroups,
-  getAllMembers, getAllJoinRequests,
-  declineJoinRequest
+  getAllMembers,
+  getAllJoinRequests,
+  declineJoinRequest,
 } from "../controller/groupController";
 
 const router = Router();
 
-
-
 // Configure multer for file uploads
 const storage: StorageEngine = multer.diskStorage({
   destination: (req: Request, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, "uploads/");
   },
   filename: (req: Request, file, cb) => {
-    const hash = crypto.createHash('md5').update(Date.now().toString()).digest('hex');
+    const hash = crypto
+      .createHash("md5")
+      .update(Date.now().toString())
+      .digest("hex");
     const ext = path.extname(file.originalname);
     cb(null, `${hash}${ext}`);
-  }
+  },
 });
 
 const upload = multer({ storage });
@@ -98,7 +101,7 @@ router.post("/popular", getPopularGroups);
  *       500:
  *         description: Error fetching your groups
  */
-router.post('/yourGroups', getYourGroups);
+router.post("/yourGroups", getYourGroups);
 
 /**
  * @swagger
@@ -299,7 +302,7 @@ router.post("/:id/addmembers", addMemberToGroup);
  *       500:
  *         description: Error declining join request
  */
-router.post('/:id/declineJoinRequest', declineJoinRequest);
+router.post("/:id/declineJoinRequest", declineJoinRequest);
 
 /**
  * @swagger
@@ -339,7 +342,7 @@ router.post('/:id/declineJoinRequest', declineJoinRequest);
  *       400:
  *         description: Invalid input
  */
-router.post("/", upload.single('image'), createGroup);
+router.post("/", upload.single("image"), createGroup);
 
 /**
  * @swagger
@@ -388,8 +391,6 @@ router.delete("/:id", deleteGroup);
  *         description: Group or user not found
  */
 router.delete("/:id/members/:userId", removeMemberFromGroup);
-
-
 
 /**
  * @swagger

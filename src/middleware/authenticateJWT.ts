@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import ApiError from "../helpers/ApiError";
+import { getUserByEmail } from "../models/userModel";
 
 export const authenticateJWT = (
   req: Request,
@@ -18,6 +19,8 @@ export const authenticateJWT = (
 
   jwt.verify(token, process.env.JWT_SECRET as jwt.Secret, (err: any, user) => {
     console.log("JWT Verifying!");
+    console.log("THE USER IS ----------", user);
+
     if (err) {
       console.log("Error happened", err);
       return next(new ApiError("Unauthorized token", 403));

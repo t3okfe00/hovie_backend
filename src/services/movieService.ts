@@ -13,7 +13,6 @@ import {
 // const axios = require('axios');
 
 const API_KEY = process.env.TMDB_API_KEY; // Replace with your TMDB API key
-const BASE_URL = "http://localhost:3000";
 
 // TMDB Response Shape (generic)
 type TMDBResponse<T> = {
