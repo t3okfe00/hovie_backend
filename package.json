@@ -14,7 +14,7 @@
     "studio:dev": "cross-env NODE_ENV=development npx drizzle-kit studio",
     "studio:test": "cross-env NODE_ENV=test npx drizzle-kit studio",
     "build": "npm install && cross-env NODE_ENV=development npx webpack --config webpack.prod.js",
-    "start": "cross-env NODE_ENV=development node dist/server.js",
+    "start": "cross-env NODE_ENV=development node dist/server.cjs",
     "test": "cross-env NODE_ENV=test node --loader ts-node/esm node_modules/mocha/bin/mocha.js 'src/tests/**/*.test.ts'"
   },
   "repository": {
@@ -36,7 +36,7 @@
     "cors": "^2.8.5",
     "cors-anywhere": "^0.4.4",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.36.0",
+    "drizzle-orm": "^0.37.0",
     "express": "^4.21.1",
     "express-validator": "^7.2.0",
     "helmet": "^8.0.0",
