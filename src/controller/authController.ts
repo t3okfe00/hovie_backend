@@ -104,14 +104,14 @@ export const loginUser = async (
   const token: string = jwt.sign(
     { userId: user[0].id, email: user[0].email, name: user[0].name }, // Payload (you can include more info here)
     process.env.JWT_SECRET as jwt.Secret, // Secret key
-    { expiresIn: "1h" } // Token expiration time (e.g., 24 hour)
+    { expiresIn: "24h" } // Token expiration time (e.g., 24 hour)
   );
 
   // Cookie
   res.cookie("jwt", token, {
     httpOnly: true,
     sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "development",
     maxAge: 3600000,
   });
 

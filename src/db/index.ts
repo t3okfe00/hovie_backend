@@ -7,4 +7,6 @@ export let dburl =
     : process.env.TEST_DATABASE_URL;
 
 console.log("dburl is", process.env.NODE_ENV);
-export const db = drizzle(dburl!);
+export const db = drizzle(
+  "Please install `postgres` to allow Drizzle ORM to connect to the database"
+);

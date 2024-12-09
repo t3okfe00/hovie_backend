@@ -28,6 +28,7 @@ export const authenticateJWT = (
 
     req.user = user;
     console.log("The authenticated user is -->", user.email);
+
     next();
   });
 };

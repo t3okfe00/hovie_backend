@@ -13,8 +13,8 @@
     "migrate:dev": "cross-env NODE_ENV=development npx drizzle-kit migrate",
     "studio:dev": "cross-env NODE_ENV=development npx drizzle-kit studio",
     "studio:test": "cross-env NODE_ENV=test npx drizzle-kit studio",
-    "build": "cross-env NODE_ENV=production webpack --config webpack.prod.js",
-    "start": "cross-env NODE_ENV=production node dist/server.js",
+    "build": "cross-env NODE_ENV=development npx webpack --config webpack.prod.js",
+    "start": "cross-env NODE_ENV=development node dist/server.js",
     "test": "cross-env NODE_ENV=test node --loader ts-node/esm node_modules/mocha/bin/mocha.js 'src/tests/**/*.test.ts'"
   },
   "repository": {
@@ -43,6 +43,8 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
+    "nock": "^13.5.6",
+    "node-pre-gyp": "^0.17.0",
     "pg": "^8.13.1",
     "postgres": "^3.4.5",
     "swagger-autogen": "^2.23.7",
@@ -66,15 +68,23 @@
     "@types/pg": "^8.11.10",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-dist": "^3.30.5",
+    "aws-sdk": "^2.1692.0",
     "chai": "^5.1.2",
     "cross-env": "^7.0.3",
     "drizzle-kit": "^0.27.1",
+    "html-loader": "^5.1.0",
     "mocha": "^10.8.2",
+    "mock-aws-s3": "^4.0.2",
+    "node-gyp": "^11.0.0",
+    "node-loader": "^2.1.0",
     "nodemon": "^3.1.7",
+    "ts-loader": "^9.5.1",
     "ts-mocha": "^10.0.0",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^5.1.4"
   }
 }

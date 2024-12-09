@@ -1,4 +1,3 @@
-import { json } from "stream/consumers";
 import {
   Genre,
   Movie,
@@ -32,7 +31,6 @@ async function fetchFromTMDB<T>(
   ).toString();
 
   const url = `https://api.themoviedb.org/3${endpoint}?${queryString}`;
-  console.log("Url constuctured for endpoint", endpoint);
 
   const options = {
     method: "GET",

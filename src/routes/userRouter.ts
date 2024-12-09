@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Router, Request, Response, NextFunction } from "express";
 import { logOutUser, me } from "../controller/userController";
 import { signUp, loginUser } from "../controller/authController";

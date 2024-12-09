@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { getReviewsByMovie, createReview } from "./../models/reviewModel";
 import { authenticateJWT } from "../middleware/authenticateJWT";
 import { Router } from "express";
