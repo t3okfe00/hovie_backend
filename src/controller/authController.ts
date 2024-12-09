@@ -7,7 +7,7 @@ import { body, validationResult } from "express-validator";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import ApiError from "../helpers/ApiError";
 import { v4 as uuidv4 } from "uuid";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { User } from "../types";
 import jwt from "jsonwebtoken";
 

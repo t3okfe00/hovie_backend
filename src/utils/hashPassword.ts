@@ -1,7 +1,7 @@
 // src/utils/hashUtils.ts
 
 import ApiError from "../helpers/ApiError";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 export const hashPassword = async (password: string): Promise<string> => {
   try {
     const saltRounds = 10;

@@ -1,37 +1,38 @@
 import path from "path";
 import { fileURLToPath } from "url";
+import webpack from "webpack"; // Import webpack for plugins
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default {
-  mode: "production",
-  entry: "./src/server.ts", // Update this path to your main server file
+  mode: "production", // Enable production optimizations
+  target: "node", // Target Node.js runtime
+  entry: "./src/server.ts", // Entry point of your application
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "server.js",
+    path: path.resolve(__dirname, "dist"), // Output directory
+    filename: "server.mjs", // Main output file
+    module: true, // Enable ES Module output
+    libraryTarget: "module",
   },
-  target: "node",
+  experiments: {
+    outputModule: true, // Enable module output
+  },
+  resolve: {
+    extensions: [".ts", ".js"], // Resolve both TypeScript and JavaScript
+  },
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.ts$/, // Transpile TypeScript files
         use: "ts-loader",
         exclude: /node_modules/,
       },
-      {
-        test: /\.html$/,
-        use: "html-loader",
-      },
-      {
-        test: /\.cs$/,
-        use: "raw-loader", // or node-loader depending on your use case
-      },
     ],
   },
-  resolve: {
-    extensions: [".tsx", ".ts", ".js"],
-  },
-  externals: {
-    "node-pre-gyp": "commonjs node-pre-gyp",
-  },
+  externals: [/(node_modules)/], // Exclude Node.js modules to reduce bundle size
+  plugins: [
+    new webpack.IgnorePlugin({
+      resourceRegExp: /\.(html|cs)$/, // Ignore files ending with .html and .cs
+    }),
+  ],
 };

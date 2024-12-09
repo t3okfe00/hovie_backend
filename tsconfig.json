@@ -20,7 +20,7 @@
     "allowUnusedLabels": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "outDir": "./dist",
+    "rootDir": "./", // Allow files outside 'src'
     "sourceMap": true
   },
   "ts-node": {
@@ -28,5 +28,10 @@
     "experimentalSpecifierResolution": "node"
   },
   "exclude": ["node_modules/"],
-  "include": ["src/**/*.ts", "src/tests/**/*.ts", "drizzle.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/tests/**/*.ts",
+    "drizzle.config.ts",
+    "src/**/*"
+  ]
 }
