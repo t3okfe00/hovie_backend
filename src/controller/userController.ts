@@ -56,7 +56,7 @@ export const logOutUser = async (
     });
 
     // Send a response indicating that the user has been logged out
-    res.status(200).json({ message: "Logout successful" });
+    res.status(200).json({ message: "Logged Out" });
   } catch (error) {
     next(error); // Handle any errors
   }

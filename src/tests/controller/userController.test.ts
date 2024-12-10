@@ -55,9 +55,9 @@ describe("POST LOGOUT", () => {
     });
 
     const logOutUser = await logOutResponse.json();
-    console.log("LOOOOOOG OOOOUUUUT", logOutUser);
+    console.log("Log out", logOutUser);
     const logoutCookie = logOutResponse.headers.get("set-cookie");
-    console.log("LOG OUT COOKCIE", logoutCookie);
+    console.log("Log Out Cookie", logoutCookie);
 
     //Verify logout response
     expect(logOutResponse.status).to.equal(200);
@@ -65,7 +65,7 @@ describe("POST LOGOUT", () => {
     expect(logoutCookie).include("jwt=;");
     expect(logoutCookie).include("Max-Age=0");
     expect(logoutCookie).include("HttpOnly");
-    expect(logoutCookie).include("SameSite=Strict");
+    expect(logoutCookie).include("SameSite=None");
   });
 });
 

@@ -116,12 +116,13 @@ describe("POST REGISTER", () => {
       profileUrl: "example",
     };
 
-    await createUser(existingUser);
+    const user = await createUser(existingUser);
 
     const response = await fetch(base_url + "/user/signup", {
       method: "post",
       headers: {
         "Content-Type": "application/json",
+        include: "credentials",
       },
       body: JSON.stringify(existingUser),
     });
@@ -143,7 +144,7 @@ describe("POST LOGIN", async () => {
       profileUrl: "example",
     };
 
-    await createUser(validUser);
+    const user = await createUser(validUser);
 
     const response = await fetch(base_url + "/user/login", {
       method: "post",
@@ -174,7 +175,7 @@ describe("POST LOGIN", async () => {
     }
 
     const maxAgeMatch = setCookieHeader?.match(/Max-Age=(\d+)/);
-    expect(setCookieHeader).to.include("SameSite=Strict");
+    expect(setCookieHeader).to.include("SameSite=None");
     expect(setCookieHeader).to.include("Max-Age");
     if (maxAgeMatch) expect(maxAgeMatch[1]).to.equal("3600");
   });
