@@ -13,7 +13,7 @@
     "migrate:dev": "cross-env NODE_ENV=development npx drizzle-kit migrate",
     "studio:dev": "cross-env NODE_ENV=development npx drizzle-kit studio",
     "studio:test": "cross-env NODE_ENV=test npx drizzle-kit studio",
-    "build": "npx cross-env NODE_ENV=development npx webpack --config webpack.prod.js && npm run copy-package-json",
+    "build": "npm install -g cross-env && cross-env NODE_ENV=development npx webpack --config webpack.prod.js && npm run copy-package-json",
     "start": "npm install && cross-env NODE_ENV=development node dist/server.mjs",
     "test": "cross-env NODE_ENV=test node --loader ts-node/esm node_modules/mocha/bin/mocha.js 'src/tests/**/*.test.ts'",
     "copy-package-json": "cp package.json dist/package.json"
