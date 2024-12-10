@@ -50,9 +50,9 @@ export const logOutUser = async (
     // Clear the JWT cookie by setting its max-age to 0
     res.cookie("jwt", "", {
       httpOnly: true,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV === "production", // Use secure flag in production
-      maxAge: 0, // Set maxAge to 0 to expire the cookie immediately
+      sameSite: "none", // Use lowercase values
+      secure: true,
+      maxAge: 0,
     });
 
     // Send a response indicating that the user has been logged out
