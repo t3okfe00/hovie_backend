@@ -111,7 +111,7 @@ export const loginUser = async (
   res.cookie("jwt", token, {
     httpOnly: true,
     sameSite: "none", // Use lowercase values
-    secure: process.env.NODE_ENV === "development",
+    secure: true,
     maxAge: 3600000,
   });
 
