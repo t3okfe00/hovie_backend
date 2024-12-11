@@ -1,38 +1,39 @@
-import path from "path";
-import { fileURLToPath } from "url";
-import webpack from "webpack"; // Import webpack for plugins
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// import webpack from "webpack"; // Import webpack for plugins
 
 export default {
-  mode: "production", // Enable production optimizations
-  target: "node", // Target Node.js runtime
-  entry: "./src/server.ts", // Entry point of your application
+  mode: "production",
+  target: "node",
+  entry: "./src/server.ts",
   output: {
-    path: path.resolve(__dirname, "dist"), // Output directory
-    filename: "server.mjs", // Main output file
-    module: true, // Enable ES Module output
+    path: path.resolve(__dirname, "dist"),
+    filename: "server.mjs",
+    module: true,
     libraryTarget: "module",
   },
   experiments: {
-    outputModule: true, // Enable module output
+    outputModule: true,
   },
   resolve: {
-    extensions: [".ts", ".js"], // Resolve both TypeScript and JavaScript
+    extensions: [".ts", ".js"],
   },
   module: {
     rules: [
       {
-        test: /\.ts$/, // Transpile TypeScript files
+        test: /\.ts$/,
         use: "ts-loader",
         exclude: /node_modules/,
       },
     ],
   },
-  externals: [/(node_modules)/], // Exclude Node.js modules to reduce bundle size
+  externals: [/(node_modules)/],
   plugins: [
     new webpack.IgnorePlugin({
-      resourceRegExp: /\.(html|cs)$/, // Ignore files ending with .html and .cs
+      resourceRegExp: /\.(html|cs)$/,
+    }),
+    new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify(
+        process.env.NODE_ENV || "production"
+      ), // Inject NODE_ENV
     }),
   ],
 };
