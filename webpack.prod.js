@@ -1,4 +1,8 @@
-// import webpack from "webpack"; // Import webpack for plugins
+import path from "path";
+import { fileURLToPath } from "url";
+import webpack from "webpack"; // Import webpack for plugins
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default {
   mode: "production",
