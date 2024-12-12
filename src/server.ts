@@ -11,6 +11,7 @@ import groupRouter from "./routes/groupRouter";
 import movieRouter from "./routes/movieRouter";
 import favoriteRouter from "./routes/favoriteRouter";
 import reviewRouter from "./routes/reviewsRouter";
+import { getFavoritesByUser } from "./models/favoritesModel";
 
 import morgan from "morgan";
 import path from "path";
@@ -19,6 +20,7 @@ import { absolutePath } from "swagger-ui-dist";
 import ApiError from "./helpers/ApiError";
 import { authenticateJWT } from "./middleware/authenticateJWT";
 import { configureSwagger } from "./routes/ConfigureSwagger";
+import { getFavoritesByUser } from "./models/favoritesModel";
 
 const app = express();
 // Use CORS middleware
@@ -81,6 +83,18 @@ app.use("/movie", movieRouter);
 // later make this route protected
 app.use("/favorites", authenticateJWT, favoriteRouter);
 app.use("/reviews", reviewRouter);
+
+// Example Node.js/Express endpoint for fetching a public profile
+app.get("/shared/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  console.log("Fetching profile for user with ID", userId);
+
+  // Query your database to get the public profile information
+  // (e.g., name, favorite movies, etc. but NOT sensitive info like email)
+  const favs = await getFavoritesByUser(userId);
+  console.log("Favorites:", favs);
+  res.json({ userId, favs });
+});
 
 // to handle requests to the endpoints that does not exist
 //important to place this after all routes since if this runs

@@ -25,25 +25,34 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 });
-router.get("/", async (req: Request, res: Response, next: NextFunction) => {
-  const { page = 1, limit = 5 } = req.query;
-  const offset = (Number(page) - 1) * Number(limit);
-  const { userId } = req.user;
-  try {
-    const favorites = await getFavoritesByUser(userId, Number(limit), offset);
-    const totalFavoritesCount = await getFavoritesCountByUserId(userId);
-    const totalPages = Math.ceil(totalFavoritesCount / Number(limit));
-    console.log("Total Pages:", totalPages);
+router.get(
+  "/shared/:userId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    console.log("***********");
+    const { page = 1, limit = 5 } = req.query;
 
-    console.log("Favorites:", favorites);
-    res.status(200).json({
-      favorites,
-      totalPages,
-    });
-  } catch (error) {
-    next(error);
+    const offset = (Number(page) - 1) * Number(limit);
+    // const { userId } = req.user;
+    const userId = Number(req.params.userId);
+    console.log("USER ID:", userId);
+    try {
+      const favorites = await getFavoritesByUser(userId, Number(limit), offset);
+      const totalFavoritesCount = await getFavoritesCountByUserId(
+        String(userId)
+      );
+      const totalPages = Math.ceil(totalFavoritesCount / Number(limit));
+      console.log("Total Pages:", totalPages);
+
+      console.log("Favorites:", favorites);
+      res.status(200).json({
+        favorites,
+        totalPages,
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 router.delete("/", (req: Request, res: Response, next: NextFunction) => {
   const { userId, email } = req.user;
