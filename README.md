@@ -102,3 +102,29 @@ npm install && npm run dev
 
 ## Link to the Video
 - **Video:** [Video](https://youtu.be/3uQLG5qtcdU)
+
+## Repo links
+**Frontend:** [Frontend](https://github.com/AWAP-Group3/Frontend)
+**Backend:** [Backend](https://github.com/AWAP-Group3/Backend)
+**Link to project:** [Project](https://github.com/orgs/AWAP-Group3/projects/1/views/1)
+
+## Database structure
+![image](https://github.com/user-attachments/assets/fa1fa575-8917-41ce-b80f-5d24f674ba63)
+
+## API Documentation
+We used Swagger to document our API which is only running on localhost. Here are a few screenshots from the Swagger Page:
+![Screenshot 2024-12-13 122648](https://github.com/user-attachments/assets/2b8f7363-aa7b-4f68-b598-89556276092c)
+![Screenshot 2024-12-13 122705](https://github.com/user-attachments/assets/5fb2feb2-43c2-4e78-8bb1-e2a6913d9787)
+![Screenshot 2024-12-13 122723](https://github.com/user-attachments/assets/bd4da665-87b6-4059-9a7e-213eab7cd53c)
+Endpoints that dont require authentication can also be tried directly!
+
+## UI
+We created UI scetches with figma, so we exactly knew where everything should be later (when writing the code)
+![Screenshot 2024-12-13 123140](https://github.com/user-attachments/assets/8e9897e7-bc9e-4df3-a748-58218ddaa13b)
+![image](https://github.com/user-attachments/assets/21d9ea49-5965-4204-92b5-e5e890cb0f0f)
+
+heres for example the groups Page and groups detail page:
+![Screenshot 2024-12-13 124150](https://github.com/user-attachments/assets/c78cafd7-6d52-4593-82e4-c8e18bd926e7)
+![image](https://github.com/user-attachments/assets/c3780d1d-1e5e-4255-83dc-43e14e69ed1b)
+
+
