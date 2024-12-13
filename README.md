@@ -99,3 +99,6 @@ npm install && npm run dev
 
 - **Frontend:** [Hovie Frontend](https://awapgroup3front.onrender.com/)
 - **Backend:** [Hovie Backend](https://awapgroup3.onrender.com/)
+
+## Link to the Video
+- **Video:** [Video](https://youtu.be/3uQLG5qtcdU)
