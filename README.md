@@ -51,8 +51,8 @@ Hovie follows the **MVC (Model-View-Controller)** architecture:
 ```
 TEST_DATABASE_URL=postgresql://postgres.zkpvgqjpkgenzjqmfdqc:AWAP-Group3!@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
 DATABASE_URL=postgresql://postgres.ijpqdqfaxpkihaiptywq:AWAP-Group3!@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
-TMDB_API_KEY=eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmY2VmYjlmYjRlMWYxZjg2OTE0ZmE4MjRiZjQ0MWU3YSIsIm5iZiI6MTczMTMzOTcyMC4wOTI2MDQ2LCJzdWIiOiI2NzI0ZmQzYjM0NDk0ODFiYWNhOWEwN2EiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.-tOiZRkFwropLnevXIVl4wUiXXUcfsf5AIpVI15oPEk
-VITE_TMDB_API_KEY=fcefb9fb4e1f1f86914fa824bf441e7a
+TMDB_API_KEY=YOUR_API_KEY_HERE
+VITE_TMDB_API_KEY=YOUR_API_KEY_HERE
 JWT_SECRET=e0463605e3627348465e4aa84c5d6d7a9c09557921d2d0ac35aeeebf95b8e4a5
 VITE_BACKEND_BASE_URL=http://localhost:3000
 VITE_MOVIE_ENDPOINT_BASE_URL=http://localhost:3000/movie
@@ -67,8 +67,7 @@ VITE_TMDB_BASE_URL=https://api.themoviedb.org/3
 TEST_DATABASE_URL=postgresql://postgres.zkpvgqjpkgenzjqmfdqc:AWAP-Group3!@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
 DATABASE_URL=postgresql://postgres.ijpqdqfaxpkihaiptywq:AWAP-Group3!@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
 JWT_SECRET=9ed9b94eb4aa1d1ea225deec7763c3f84f1bf5f21a26e80755a2a19895d901f4
-TMDB_API_KEY=eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmY2VmYjlmYjRlMWYxZjg2OTE0ZmE4MjRiZjQ0MWU3YSIsIm5iZiI6MTczMTMzOTcyMC4wOTI2MDQ2LCJzdWIiOiI2NzI0ZmQzYjM0NDk0ODFiYWNhOWEwN2EiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.-tOiZRkFwropLnevXIVl4wUiXXUcfsf5AIpVI15oPEk
-```
+TMDB_API_KEY=YOUR_API_KEY_hERE
 
 3. Install dependencies and start the backend:
 
