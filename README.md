@@ -46,20 +46,7 @@ Hovie follows the **MVC (Model-View-Controller)** architecture:
 1. Clone the repository from GitHub.
 2. Set up `.env` files for both frontend and backend.
 
-### Frontend `.env` Example:
 
-```
-TEST_DATABASE_URL=supabase_db_url
-DATABASE_URL=supabase_db_url
-TMDB_API_KEY=YOUR_API_KEY_HERE
-VITE_TMDB_API_KEY=YOUR_API_KEY_HERE
-JWT_SECRET=your_secret
-VITE_BACKEND_BASE_URL=http://localhost:3000
-VITE_MOVIE_ENDPOINT_BASE_URL=http://localhost:3000/movie
-VITE_BASE_IMAGE_URL=https://image.tmdb.org/t/p/
-VITE_ORIGINAL_IMAGE_URL=https://image.tmdb.org/t/p/original
-VITE_TMDB_BASE_URL=https://api.themoviedb.org/3
-```
 
 ### Backend `.env` Example:
 
