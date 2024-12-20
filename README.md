@@ -49,11 +49,11 @@ Hovie follows the **MVC (Model-View-Controller)** architecture:
 ### Frontend `.env` Example:
 
 ```
-TEST_DATABASE_URL=postgresql://postgres.zkpvgqjpkgenzjqmfdqc:AWAP-Group3!@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
-DATABASE_URL=postgresql://postgres.ijpqdqfaxpkihaiptywq:AWAP-Group3!@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
+TEST_DATABASE_URL=supabase_db_url
+DATABASE_URL=supabase_db_url
 TMDB_API_KEY=YOUR_API_KEY_HERE
 VITE_TMDB_API_KEY=YOUR_API_KEY_HERE
-JWT_SECRET=e0463605e3627348465e4aa84c5d6d7a9c09557921d2d0ac35aeeebf95b8e4a5
+JWT_SECRET=your_secret
 VITE_BACKEND_BASE_URL=http://localhost:3000
 VITE_MOVIE_ENDPOINT_BASE_URL=http://localhost:3000/movie
 VITE_BASE_IMAGE_URL=https://image.tmdb.org/t/p/
@@ -64,9 +64,9 @@ VITE_TMDB_BASE_URL=https://api.themoviedb.org/3
 ### Backend `.env` Example:
 
 ```
-TEST_DATABASE_URL=postgresql://postgres.zkpvgqjpkgenzjqmfdqc:AWAP-Group3!@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
-DATABASE_URL=postgresql://postgres.ijpqdqfaxpkihaiptywq:AWAP-Group3!@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
-JWT_SECRET=9ed9b94eb4aa1d1ea225deec7763c3f84f1bf5f21a26e80755a2a19895d901f4
+TEST_DATABASE_URL=supabase_db_url
+DATABASE_URL=supabase_db_url
+JWT_SECRET=your_secret
 TMDB_API_KEY=YOUR_API_KEY_hERE
 
 3. Install dependencies and start the backend:
